@@ -12,7 +12,7 @@ module fpga_snake_game (
 	input  logic       BTND,
 	input  logic       BTNL,
 	input  logic       BTNR,
-	input  logic       BTNC,
+	input  logic [1:0] SW,
 	output logic [7:0] LED,
 	output logic [3:0] VGA_R,
 	output logic [3:0] VGA_G,
@@ -52,8 +52,8 @@ module fpga_snake_game (
 	always @(posedge CLKOUT0) begin
 		counter <= counter == 25174013 ? 0 : counter + 1;
 		LED[5] <= LED[5] ^ (counter == 25174013);
-		phase_counter <= phase_counter == 6293503 ? 0 : phase_counter + 1;
-		phase <= phase ^ (phase_counter == 6293503 && !BTNC);
+		phase_counter <= phase_counter == 6293503 ? 0 : phase_counter + SW[0];
+		phase <= phase ^ (phase_counter == 6293503);
 	end
 
 	logic vsync;
@@ -70,6 +70,7 @@ module fpga_snake_game (
 		.i_left(BTNL),
 		.i_right(BTNR),
 		.i_phase(phase),
+		.i_restart(SW[1]),
 
 		.o_vga_r(VGA_R[3:2]),
 		.o_vga_g(VGA_G[3:2]),

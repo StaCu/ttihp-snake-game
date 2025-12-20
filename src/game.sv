@@ -12,6 +12,7 @@ module game (
 	input  logic       i_left,
 	input  logic       i_right,
 	input  logic       i_phase,
+	input  logic       i_restart,
 
 	output logic [1:0] o_vga_r,
 	output logic [1:0] o_vga_g,
@@ -28,21 +29,28 @@ module game (
 	logic       next_tick;
 	logic       phase;
 	logic       next_phase;
+	logic       start;
 	logic	    failure;
 	logic	    success;
 	assign o_failure = failure;
 	assign o_success = success;
 
+	logic       restart;
+	assign restart = i_restart || !rst_n;
+
 	logic [1:0] curr_dir;
 	logic [1:0] next_dir;
 
 	control control_inst (
+		.clk(clk),
+		.rst_n(!restart),
 		.i_up(i_up),
 		.i_down(i_down),
 		.i_left(i_left),
 		.i_right(i_right),
 		.i_dir(curr_dir),
-		.o_dir(next_dir)
+		.o_dir(next_dir),
+		.o_start(start)
 	);
 
 	logic [4:0] pos_x;
@@ -60,7 +68,7 @@ module game (
 
 	snake snake_inst (
 		.clk(clk),
-		.rst_n(rst_n),
+		.rst_n(!restart),
 		.i_tick(tick),
 		.i_dir(next_dir),
 		.o_dir(curr_dir),
@@ -76,7 +84,7 @@ module game (
 
 	apple apple_inst (
 		.clk(clk),
-		.rst_n(rst_n),
+		.rst_n(!restart),
 		.i_snake_x(pos_x),
 		.i_snake_y(pos_y),
 		.i_snake_first(pos_first),
@@ -118,8 +126,9 @@ module game (
 		next_phase = phase;
 		if (pos_first) begin
 			next_tick = 0;
-		end else if (phase != i_phase && apple_ready && !failure && !success) begin
+		end else if (phase != i_phase && apple_ready && !failure && !success && start) begin
 			// the next game tick can only happen when the following conditions are met:
+			// - the game has started
 			// - the next phase is provided by input
 			// - the game itself is ready for a tick
 			// If the previous game tick has not been applied yet, we loose 1 tick
@@ -129,7 +138,7 @@ module game (
 	end
 
 	always @(posedge clk) begin
-		if (!rst_n) begin
+		if (restart) begin
 			tick <= 0;
 			phase <= i_phase;
 			failure <= 0;

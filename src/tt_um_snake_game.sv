@@ -22,7 +22,7 @@ module tt_um_snake_game (
 	assign uio_oe       = 8'b00000111;
 
 	// List all unused inputs to prevent warnings
-	logic _unused = &{ena, uio_in, ui_in[7:5], 1'b0};
+	logic _unused = &{ena, uio_in, ui_in[7:6], 1'b0};
 
 	game game_inst (
 		.clk(clk),
@@ -33,6 +33,7 @@ module tt_um_snake_game (
 		.i_left(ui_in[2]),
 		.i_right(ui_in[3]),
 		.i_phase(ui_in[4]),
+		.i_restart(ui_in[5]),
 
 		.o_vga_r({ uo_out[0], uo_out[4] }),
 		.o_vga_g({ uo_out[1], uo_out[5] }),
