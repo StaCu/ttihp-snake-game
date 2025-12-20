@@ -1,6 +1,10 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Tiny Tapeout Snake Game
+
+The classic game "Snake" for Tiny Tapeout with the same 20x11 dimensions as the Nokia original.
+Uses 2 Tiles, one of which contains essentially just a giant shift register holding the current state of the snake.
+Includes VGA controller logic to play on the "big" screen.
 
 - [Read the documentation for project](docs/info.md)
 
