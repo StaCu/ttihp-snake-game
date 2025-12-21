@@ -39,6 +39,12 @@ async def test_project(dut):
         0b10100,
         0b00100,
         0b10100,
+        0b10010,
+        0b00010,
+        0b10010,
+        0b00010,
+        0b11000,
+        0b01000,
     ]
     for i in range(100):
         dut.ui_in.value = ctrl[i % len(ctrl)]

@@ -22,19 +22,23 @@ module snake (
 	output logic       o_success
 );
 
-	logic [1:0] prev_dir;
-	logic [1:0] next_dir;
+	logic [1:0] dir_out;
+	logic [1:0] dir_in;
+	logic [1:0] dir_first;
 
+	// The snake is stored in a shift register.
+	// Every element holds the information of which direction to go next (head to tail).
 	shiftreg #(
 		.WIDTH(2),
 		.DEPTH(220)
 	) shiftreg_inst (
 		.clk(clk),
-		.i_data(next_dir),
-		.o_data(prev_dir)
+		.out(dir_out),
+		.in(dir_in),
+		.first(dir_first)
 	);
 
-	assign o_dir = prev_dir;
+	assign o_dir = dir_out;
 
 	logic [4:0] head_x;
 	logic [3:0] head_y;
@@ -57,11 +61,11 @@ module snake (
 	assign o_pos_first = pos == 0;
 	assign o_pos_last  = pos == length;
 	assign o_pos_valid = pos_valid;
-	assign o_success = length == 220;
+	assign o_success = length == 219;
 	assign o_failure = pos_valid && pos != 0 && ((head_x == pos_x && head_y == pos_y) || head_x == 0 || head_x == 21 || head_y == 0 || head_y == 21);
 
 	always @(*) begin
-		next_dir = prev_dir;
+		dir_in = dir_out;
 
 		next_head_x = head_x;
 		next_head_y = head_y;
@@ -69,25 +73,27 @@ module snake (
 
 		next_pos_x = pos_x;
 		next_pos_y = pos_y;
-		next_pos = pos == 219 ? 0 : pos + 1;
 		next_pos_valid = pos_valid;
 
-		if (pos == 219) begin
-			if (i_tick) begin
-				case (i_dir)
-					2'b00: next_head_y = head_y + 1;
-					2'b01: next_head_y = head_y - 1;
-					2'b10: next_head_x = head_x + 1;
-					2'b11: next_head_x = head_x - 1;
-				endcase
-			end
+		if (pos == 218 && i_tick) begin
+			case (i_dir)
+				2'b00: next_head_y = head_y + 1;
+				2'b01: next_head_y = head_y - 1;
+				2'b10: next_head_x = head_x + 1;
+				2'b11: next_head_x = head_x - 1;
+			endcase
+			dir_in = i_dir;
+			next_pos_x = next_head_x;
+			next_pos_y = next_head_y;
+			next_pos = 0;
+			next_pos_valid = 1;
+		end else if (pos == 219) begin
 			next_pos_x = head_x;
 			next_pos_y = head_y;
 			next_pos = 0;
 			next_pos_valid = 1;
-			next_dir = i_dir;
 		end else begin
-			case (prev_dir)
+			case (dir_first)
 				2'b00: next_pos_y = pos_y - 1;
 				2'b01: next_pos_y = pos_y + 1;
 				2'b10: next_pos_x = pos_x - 1;
@@ -99,7 +105,7 @@ module snake (
 			end
 		end
 		if (!rst_n) begin
-			next_dir = 0;
+			dir_in = 0;
 		end
 	end
 
@@ -107,7 +113,7 @@ module snake (
 		if (!rst_n) begin
 			head_x <= 10;
 			head_y <= 5;
-			length <= 2;
+			length <= 4;
 			pos <= 219;
 			pos_valid <= 0;
 		end else begin
