@@ -52,7 +52,7 @@ module fpga_snake_game (
 	always @(posedge CLKOUT0) begin
 		counter <= counter == 25174013 ? 0 : counter + 1;
 		LED[5] <= LED[5] ^ (counter == 25174013);
-		phase_counter <= phase_counter == 6293503 ? 0 : phase_counter + SW[0];
+		phase_counter <= phase_counter == 6293503 ? 0 : phase_counter + !SW[0];
 		phase <= phase ^ (phase_counter == 6293503);
 	end
 
