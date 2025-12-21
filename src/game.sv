@@ -39,6 +39,7 @@ module game (
 	assign restart = i_restart || !rst_n;
 
 	logic [1:0] curr_dir;
+	logic [1:0] head_dir;
 	logic [1:0] next_dir;
 
 	control control_inst (
@@ -48,7 +49,7 @@ module game (
 		.i_down(i_down),
 		.i_left(i_left),
 		.i_right(i_right),
-		.i_dir(curr_dir),
+		.i_head_dir(head_dir),
 		.o_dir(next_dir),
 		.o_start(start)
 	);
@@ -71,6 +72,7 @@ module game (
 		.rst_n(!restart),
 		.i_tick(tick),
 		.i_dir(next_dir),
+		.o_head_dir(head_dir),
 		.o_dir(curr_dir),
 		.o_pos_x(pos_x),
 		.o_pos_y(pos_y),

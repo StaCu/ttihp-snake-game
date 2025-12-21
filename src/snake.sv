@@ -9,6 +9,7 @@ module snake (
 
 	input  logic       i_tick,
 	input  logic [1:0] i_dir,
+	output logic [1:0] o_head_dir,
 	output logic [1:0] o_dir,
 
 	input  logic       i_eat,
@@ -38,14 +39,17 @@ module snake (
 		.first(dir_first)
 	);
 
-	assign o_dir = dir_out;
+	assign o_dir = dir_first;
 
+	logic [1:0] head_dir;
 	logic [4:0] head_x;
 	logic [3:0] head_y;
 	logic [7:0] length;
+	logic [1:0] next_head_dir;
 	logic [4:0] next_head_x;
 	logic [3:0] next_head_y;
 	logic [7:0] next_length;
+	assign o_head_dir = head_dir;
 
 	logic [4:0] pos_x;
 	logic [3:0] pos_y;
@@ -67,6 +71,7 @@ module snake (
 	always @(*) begin
 		dir_in = dir_out;
 
+		next_head_dir = head_dir;
 		next_head_x = head_x;
 		next_head_y = head_y;
 		next_length = length + { 7'b0, i_eat };
@@ -83,6 +88,7 @@ module snake (
 				2'b11: next_head_x = head_x - 1;
 			endcase
 			dir_in = i_dir;
+			next_head_dir = i_dir;
 			next_pos_x = next_head_x;
 			next_pos_y = next_head_y;
 			next_pos = 0;
@@ -111,12 +117,14 @@ module snake (
 
 	always @(posedge clk) begin
 		if (!rst_n) begin
+			head_dir <= 0;
 			head_x <= 10;
 			head_y <= 5;
 			length <= 4;
 			pos <= 219;
 			pos_valid <= 0;
 		end else begin
+			head_dir <= next_head_dir;
 			head_x <= next_head_x;
 			head_y <= next_head_y;
 			length <= next_length;
