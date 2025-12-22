@@ -1,7 +1,7 @@
 /*
-* Copyright (c) 2025 David Volz
-* SPDX-License-Identifier: Apache-2.0
-*/
+ * Copyright (c) 2025 David Volz
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 `include "common.sv"
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 David Volz
+ * Copyright (c) 2025 David Volz
  * SPDX-License-Identifier: Apache-2.0
  */
 
