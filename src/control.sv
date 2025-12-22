@@ -32,13 +32,13 @@ module control (
 
     always @(*) begin
         next_dir = dir;
-        if (i_up && backwards != 2'b00) begin
+        if (i_up && backwards != 2'b00 && (i_head_dir != 2'b00 || !start)) begin
             next_dir = 2'b00;
-        end else if (i_down && backwards != 2'b01) begin
+        end else if (i_down && backwards != 2'b01 && i_head_dir != 2'b01) begin
             next_dir = 2'b01;
-        end else if (i_left && backwards != 2'b10) begin
+        end else if (i_left && backwards != 2'b10 && i_head_dir != 2'b10) begin
             next_dir = 2'b10;
-        end else if (i_right && backwards != 2'b11) begin
+        end else if (i_right && backwards != 2'b11 && i_head_dir != 2'b11) begin
             next_dir = 2'b11;
         end
     end
