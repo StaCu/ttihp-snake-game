@@ -33,7 +33,7 @@ module tt_um_snake_game (
 		.i_down(ui_in[1]),
 		.i_left(ui_in[2]),
 		.i_right(ui_in[3]),
-		.i_phase(ui_in[4]),
+		.i_pause(ui_in[4]),
 		.i_restart(ui_in[5]),
 
 		.o_vga_r({ uo_out[0], uo_out[4] }),

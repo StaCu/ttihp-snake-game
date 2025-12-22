@@ -3,6 +3,7 @@ create_project project_1 . -part xc7a100tcsg324-2
 add_files -norecurse -scan_for_includes       \
     "$base_dir/verilog/shiftreg.sv"           \
     "$base_dir/verilog/common.sv"             \
+    "$base_dir/verilog/tickgen.sv"            \
     "$base_dir/verilog/snake.sv"              \
     "$base_dir/verilog/vga.sv"                \
     "$base_dir/verilog/random.sv"             \

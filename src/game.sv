@@ -13,7 +13,7 @@ module game (
 	input  logic       i_down,
 	input  logic       i_left,
 	input  logic       i_right,
-	input  logic       i_phase,
+	input  logic       i_pause,
 	input  logic       i_restart,
 
 	output logic [1:0] o_vga_r,
@@ -28,9 +28,9 @@ module game (
 );
 
 	logic       tick;
-	logic       next_tick;
-	logic       phase;
-	logic       next_phase;
+	logic       tick_done;
+	logic       apply_tick;
+	logic       tick_vsync;
 	logic       start;
 	logic	    failure;
 	logic	    success;
@@ -39,6 +39,17 @@ module game (
 
 	logic       restart;
 	assign restart = i_restart || !rst_n;
+
+	tickgen tickgen_inst (
+		.clk(clk),
+		.rst_n(rst_n),
+		.i_up(i_up),
+		.i_down(i_down),
+		.i_restart(i_restart),
+		.i_vsync(tick_vsync && !i_pause),
+		.i_tick_done(tick_done),
+		.o_tick(tick)
+	);
 
 	logic [1:0] curr_dir;
 	logic [1:0] head_dir;
@@ -76,7 +87,7 @@ module game (
 	snake snake_inst (
 		.clk(clk),
 		.rst_n(!restart),
-		.i_tick(tick),
+		.i_tick(tick & apply_tick),
 		.i_dir(next_dir),
 		.o_head_dir(head_dir),
 		.o_dir(curr_dir),
@@ -136,33 +147,45 @@ module game (
 	);
 
 	always @(*) begin
-		next_tick = tick;
-		next_phase = phase;
-		if (pos_first) begin
-			next_tick = 0;
-		end else if (phase != i_phase && apple_ready && !failure && !success && start) begin
-			// the next game tick can only happen when the following conditions are met:
-			// - the game has started
-			// - the next phase is provided by input
-			// - the game itself is ready for a tick
-			// If the previous game tick has not been applied yet, we loose 1 tick
-			next_tick = 1;
-			next_phase = i_phase;
-		end
+		tick_done = pos_first;
+
+		// the next game tick can only happen when the following conditions are met:
+		// - the game has started
+		// - the next phase is provided by input
+		// - the game itself is ready for a tick
+		// If the previous game tick has not been applied yet, we loose 1 tick
+		apply_tick = apple_ready && !failure && !success && start;
 	end
 
 	always @(posedge clk) begin
 		if (restart) begin
-			tick <= 0;
-			phase <= i_phase;
 			failure <= 0;
 			success <= 0;
 		end else begin
 			failure <= failure | snake_failure;
 			success <= success | snake_success;
-			tick <= next_tick;
-			phase <= next_phase;
 		end
 	end
+
+`ifdef RTL_SIMULATION
+	// The normal vsync pulse only happens every 420000 cycles, which is just too slow for simulation purposes
+	// This section links the vsync pulse for the tick generator to a much quicker counter.
+	logic [15:0] rtl_simulation_tick_vsync_counter;
+
+	always @(posedge clk) begin
+		if (!rst_n) begin
+			rtl_simulation_tick_vsync_counter <= 0;
+			tick_vsync <= 0;
+		end else if (rtl_simulation_tick_vsync_counter == 20) begin
+			rtl_simulation_tick_vsync_counter <= 0;
+			tick_vsync <= 1;
+		end else begin
+			rtl_simulation_tick_vsync_counter <= rtl_simulation_tick_vsync_counter + 1;
+			tick_vsync <= 0;
+		end
+	end
+`else
+	assign tick_vsync = o_vga_vsync;
+`endif
 
 endmodule

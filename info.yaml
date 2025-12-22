@@ -19,6 +19,7 @@ project:
   source_files:
     - "tt_um_snake_game.sv"
     - "common.sv"
+    - "tickgen.sv"
     - "game.sv"
     - "control.sv"
     - "snake.sv"
@@ -36,7 +37,7 @@ pinout:
   ui[1]: "down"
   ui[2]: "left"
   ui[3]: "right"
-  ui[4]: "phase"
+  ui[4]: "pause"
   ui[5]: "restart"
   ui[6]: ""
   ui[7]: ""

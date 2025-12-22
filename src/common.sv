@@ -19,4 +19,12 @@ parameter int GAME_HEIGHT = 13;
 
 parameter int MAX_LENGTH = GAME_WIDTH * GAME_HEIGHT;
 
+// Tick rate
+// The tick counter counts once per frame, i.e. 60 times per second
+//parameter int DEFAULT_TICK_COUNTER_MAX = 29; // 29+1 ==  2 ticks per second
+parameter int DEFAULT_TICK_COUNTER_MAX = 14; // 14+1 ==  4 ticks per second
+//parameter int DEFAULT_TICK_COUNTER_MAX = 11; // 11+1 ==  5 ticks per second
+//parameter int DEFAULT_TICK_COUNTER_MAX =  9; //  9+1 ==  6 ticks per second
+//parameter int DEFAULT_TICK_COUNTER_MAX =  5; //  5+1 == 10 ticks per second
+
 `endif

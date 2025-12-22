@@ -27,19 +27,19 @@ async def test_project(dut):
 
     # Run the game for a few iterations
     ctrl = [
-        0b00000,
-        0b10001,
-        0b00001,
-        0b10100,
-        0b00100,
-        0b10100,
-        0b00100,
-        0b10010,
-        0b00010,
-        0b10010,
-        0b00010,
-        0b11000,
-        0b01000,
+        0b0000,
+        0b0001,
+        0b0001,
+        0b0100,
+        0b0100,
+        0b0100,
+        0b0100,
+        0b0010,
+        0b0010,
+        0b0010,
+        0b0010,
+        0b1000,
+        0b1000,
     ]
     for i in range(100):
         dut.ui_in.value = ctrl[i % len(ctrl)]
