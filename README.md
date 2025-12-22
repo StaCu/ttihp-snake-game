@@ -2,7 +2,7 @@
 
 # Tiny Tapeout Snake Game
 
-The classic game "Snake" for Tiny Tapeout with the same 20x11 dimensions as the Nokia original.
+The classic game "Snake" for Tiny Tapeout.
 Uses 2 Tiles, one of which contains essentially just a giant shift register holding the current state of the snake.
 Includes VGA controller logic to play on the "big" screen.
 
