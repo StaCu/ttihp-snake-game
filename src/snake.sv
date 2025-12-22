@@ -120,7 +120,7 @@ module snake (
 			head_dir <= 0;
 			head_x <= 10;
 			head_y <= 5;
-			length <= 4;
+			length <= 1;
 			pos <= 219;
 			pos_valid <= 0;
 		end else begin

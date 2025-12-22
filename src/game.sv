@@ -41,6 +41,7 @@ module game (
 	logic [1:0] curr_dir;
 	logic [1:0] head_dir;
 	logic [1:0] next_dir;
+	logic new_user_input;
 
 	control control_inst (
 		.clk(clk),
@@ -51,7 +52,8 @@ module game (
 		.i_right(i_right),
 		.i_head_dir(head_dir),
 		.o_dir(next_dir),
-		.o_start(start)
+		.o_start(start),
+		.o_new_user_input(new_user_input)
 	);
 
 	logic [4:0] pos_x;
@@ -87,6 +89,8 @@ module game (
 	apple apple_inst (
 		.clk(clk),
 		.rst_n(!restart),
+		.rng_rst_n(rst_n),
+		.i_new_user_input(new_user_input),
 		.i_snake_x(pos_x),
 		.i_snake_y(pos_y),
 		.i_snake_first(pos_first),

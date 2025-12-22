@@ -12,7 +12,8 @@ module control (
 	input  logic       i_right,
 	input  logic [1:0] i_head_dir,
 	output logic [1:0] o_dir,
-    output logic       o_start
+    output logic       o_start,
+    output logic       o_new_user_input
 );
 
     logic [1:0] backwards;
@@ -24,6 +25,8 @@ module control (
 
     logic start;
     assign o_start = start;
+
+    assign o_new_user_input = dir != next_dir;
 
     always @(*) begin
         next_dir = dir;

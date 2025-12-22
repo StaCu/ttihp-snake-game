@@ -6,6 +6,8 @@
 module apple (
 	input  logic       clk,
 	input  logic       rst_n,
+	input  logic       rng_rst_n,
+	input  logic       i_new_user_input,
 	input  logic [4:0] i_snake_x,
 	input  logic [3:0] i_snake_y,
 	input  logic       i_snake_first,
@@ -17,11 +19,16 @@ module apple (
 	output logic       o_eat
 );
 
-	logic [8:0] rng;
+	logic [3:0] rng4;
+	logic [4:0] rng5;
+	logic [4:0] rng_update;
 
 	random random_inst (
 		.clk(clk),
-		.o_rng(rng)
+		.rst_n(rng_rst_n),
+		.update(rng_update),
+		.rng4(rng4),
+		.rng5(rng5)
 	);
 
 	logic [4:0] apple_x;
@@ -45,32 +52,30 @@ module apple (
 	assign o_eat = snake_eat_apple;
 	assign o_ready = ready;
 
-	logic apple_x_oob = apple_x == 0 || apple_x > 20;
-	logic apple_y_oob = apple_y == 0 || apple_y > 11;
+	// Test if the apple position is outside the game field (out of bounds).
+	// => The galois rng will never return 0, so no need to check it
+	logic apple_x_oob = /*apple_x == 0 ||*/apple_x > 20;
+	logic apple_y_oob = /*apple_y == 0 ||*/apple_y > 11;
 
 	always @(*) begin
+		// Update the rng when the apple has a valid position.
+		// If we are in the test-phase, we have a more specific rule when to update the rng.
+		// Mix in user input for some extra randomness.
+		rng_update = ready ^ i_new_user_input;
 		next_test = test;
 		next_ready = ready;
 		next_apple_x = apple_x;
 		next_apple_y = apple_y;
-		if (snake_eat_apple || !rst_n) begin
+		if (snake_eat_apple || snake_on_apple || apple_x_oob || apple_y_oob || !rst_n) begin
+			// We must ensure that the apple will always find an empty spot, even if only one is remaining.
+			// The galois rngs have 15 and 31 iterations each and will only repeat pairs after 15*31 iterations,
+			// because that is the smallest common multiple.
+			// Since the only update the rngs once per test, we will therefore test every position eventually. 
 			next_ready = 0;
 			next_test = 0;
-			next_apple_x = rng[8:4];
-			next_apple_y = rng[3:0];
-		end else if (snake_on_apple || apple_x_oob || apple_y_oob) begin
-			next_ready = 0;
-			next_test = 0;
-			// the next increments ensure that the apple will eventually find a legal position
-			// - it is not out of bounds
-			// - it is not inside the snake
-			// `apple.py` proves that this will hit every posible position.
-			if (apple_x_oob || !apple_y_oob) begin
-				next_apple_x = apple_x + 11;
-			end
-			if (apple_y_oob || !apple_x_oob) begin
-				next_apple_y = apple_y + 7;
-			end
+			next_apple_x = rng5;
+			next_apple_y = rng4;
+			rng_update = 1;
 		end else if (i_snake_first) begin
 			next_test = 1;
 		end else if (!i_snake_valid && test) begin
