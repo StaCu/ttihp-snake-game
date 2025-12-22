@@ -16,6 +16,8 @@ module snake (
 
 	input  logic       i_eat,
 
+	output logic [4:0] o_head_x,
+	output logic [3:0] o_head_y,
 	output logic [4:0] o_pos_x,
 	output logic [3:0] o_pos_y,
 	output logic       o_pos_first,
@@ -51,6 +53,8 @@ module snake (
 	logic [4:0] next_head_x;
 	logic [3:0] next_head_y;
 	logic [7:0] next_length;
+	assign o_head_x = head_x;
+	assign o_head_y = head_y;
 	assign o_head_dir = head_dir;
 
 	logic [4:0] pos_x;

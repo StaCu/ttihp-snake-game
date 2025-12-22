@@ -8,6 +8,7 @@
 module vga (
 	input  logic       clk,
 	input  logic       rst_n,
+	input  logic       game_rst_n,
 	output logic [1:0] r,
 	output logic [1:0] g,
 	output logic [1:0] b,
@@ -18,9 +19,10 @@ module vga (
 	input  logic [3:0] apple_y,
 	input  logic       apple_valid,
 
+	input  logic [4:0] snake_head_x,
+	input  logic [3:0] snake_head_y,
 	input  logic [4:0] snake_x,
 	input  logic [3:0] snake_y,
-	input  logic [1:0] snake_dir,
 	input  logic       snake_first,
 	input  logic       snake_last,
 	input  logic       snake_valid,
@@ -53,38 +55,46 @@ module vga (
 		.hsync(hsync)
 	);
 
-	logic [2:0] row_buffer [GAME_WIDTH-1:0];
+	logic [1:0] pos_counter;
+	logic [1:0] row_buffer [GAME_WIDTH-1:0];
 
 	always @(*) begin
 		rgb = 6'b000000;
 		if (!visible) begin
 			rgb = 6'b000000;
+		end else if (tx == snake_head_x && ty == snake_head_y && game_rst_n) begin
+			rgb = 6'b101000;
 		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
 			rgb = 6'b111111;
+		end else if (tx == apple_x && ty == apple_y && apple_valid) begin
+			rgb = 6'b110000;
 		end else begin
 			case (row_buffer[tx-1])
 				0: rgb = 6'b000000;
-				1: rgb = 6'b000000;
-				2: rgb = 6'b000000;
-				3: rgb = 6'b110000;
-				4: rgb = 6'b001100;
-				5: rgb = 6'b001100;
-				6: rgb = 6'b001100;
-				7: rgb = 6'b001100;
+				1: rgb = 6'b000100;
+				2: rgb = 6'b001000;
+				3: rgb = 6'b001100;
 			endcase
 		end
 	end
 
 	always @(posedge clk) begin
-		if (hsync || !rst_n) begin		
+		if (hsync) begin		
 			for (int i = 0; i < GAME_WIDTH; i = i + 1) begin
-				row_buffer[i] <= 3'b0;
+				row_buffer[i] <= 2'b00;
 			end
 		end
+
+		if (snake_first) begin
+			pos_counter <= 1;
+		end else if (pos_counter == 3) begin
+			pos_counter <= 1;
+		end else begin
+			pos_counter <= pos_counter + 1;
+		end
+
 		if (ty == snake_y && snake_valid) begin
-			row_buffer[snake_x-1] <= { 1'b1, snake_dir };
-		end else if (ty == apple_y && apple_valid) begin
-			row_buffer[apple_x-1] <= 3'b011;
+			row_buffer[snake_x-1] <= pos_counter;
 		end
 	end
 

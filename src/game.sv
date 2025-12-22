@@ -58,6 +58,8 @@ module game (
 		.o_new_user_input(new_user_input)
 	);
 
+	logic [4:0] head_x;
+	logic [3:0] head_y;
 	logic [4:0] pos_x;
 	logic [3:0] pos_y;
 	logic       pos_first;
@@ -78,6 +80,8 @@ module game (
 		.i_dir(next_dir),
 		.o_head_dir(head_dir),
 		.o_dir(curr_dir),
+		.o_head_x(head_x),
+		.o_head_y(head_y),
 		.o_pos_x(pos_x),
 		.o_pos_y(pos_y),
 		.o_pos_first(pos_first),
@@ -107,6 +111,7 @@ module game (
 	vga vga_inst (
 		.clk(clk),
 		.rst_n(rst_n),
+		.game_rst_n(!restart),
 		.r(o_vga_r),
 		.g(o_vga_g),
 		.b(o_vga_b),
@@ -117,9 +122,10 @@ module game (
 		.apple_y(apple_y),
 		.apple_valid(apple_ready),
 
+		.snake_head_x(head_x),
+		.snake_head_y(head_y),
 		.snake_x(pos_x),
 		.snake_y(pos_y),
-		.snake_dir(curr_dir),
 		.snake_first(pos_first),
 		.snake_last(pos_last),
 		.snake_valid(pos_valid),
