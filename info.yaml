@@ -36,7 +36,7 @@ pinout:
   ui[2]: "left"
   ui[3]: "right"
   ui[4]: "phase"
-  ui[5]: ""
+  ui[5]: "restart"
   ui[6]: ""
   ui[7]: ""
 
