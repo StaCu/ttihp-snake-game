@@ -65,7 +65,11 @@ module vga (
 		end else if (tx == snake_head_x && ty == snake_head_y && game_rst_n) begin
 			rgb = 6'b101000;
 		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
-			rgb = 6'b111111;
+			case ({ success, failure })
+				2'b10: rgb = 6'b001000;
+				2'b01: rgb = 6'b100000;
+				default: rgb = 6'b111111;
+			endcase
 		end else if (tx == apple_x && ty == apple_y && apple_valid) begin
 			rgb = 6'b110000;
 		end else begin
@@ -79,22 +83,22 @@ module vga (
 	end
 
 	always @(posedge clk) begin
-		if (hsync) begin		
+		if (snake_first) begin
+			pos_counter <= 1;
+		end else begin
+			pos_counter <= pos_counter + 1;
+		end
+	end
+
+	always @(posedge clk) begin
+		if (hsync) begin
 			for (int i = 0; i < GAME_WIDTH; i = i + 1) begin
 				row_buffer[i] <= 2'b00;
 			end
 		end
 
-		if (snake_first) begin
-			pos_counter <= 1;
-		end else if (pos_counter == 3) begin
-			pos_counter <= 1;
-		end else begin
-			pos_counter <= pos_counter + 1;
-		end
-
 		if (ty == snake_y && snake_valid) begin
-			row_buffer[snake_x-1] <= pos_counter;
+			row_buffer[snake_x-1] <= { pos_counter[1] || (pos_counter == 0), pos_counter[0] };
 		end
 	end
 
