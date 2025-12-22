@@ -3,6 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+`include "common.sv"
+
 module control (
 	input  logic       clk,
 	input  logic       rst_n,
@@ -44,7 +46,7 @@ module control (
     always @(posedge clk) begin
         if (!rst_n) begin
             start <= 0;
-            dir <= 0;
+            dir <= 2'b01;
         end else begin
             start <= start | dir != 2'b01;
             dir <= next_dir;

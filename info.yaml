@@ -18,6 +18,7 @@ project:
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
     - "tt_um_snake_game.sv"
+    - "common.sv"
     - "game.sv"
     - "control.sv"
     - "snake.sv"

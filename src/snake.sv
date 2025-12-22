@@ -3,6 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+`include "common.sv"
+
 module snake (
 	input  logic       clk,
 	input  logic       rst_n,
@@ -31,7 +33,7 @@ module snake (
 	// Every element holds the information of which direction to go next (head to tail).
 	shiftreg #(
 		.WIDTH(2),
-		.DEPTH(220)
+		.DEPTH(MAX_LENGTH)
 	) shiftreg_inst (
 		.clk(clk),
 		.out(dir_out),
@@ -65,8 +67,8 @@ module snake (
 	assign o_pos_first = pos == 0;
 	assign o_pos_last  = pos == length;
 	assign o_pos_valid = pos_valid;
-	assign o_success = length == 219;
-	assign o_failure = pos_valid && pos != 0 && ((head_x == pos_x && head_y == pos_y) || head_x == 0 || head_x == 21 || head_y == 0 || head_y == 21);
+	assign o_success = length == (MAX_LENGTH-1);
+	assign o_failure = pos_valid && pos != 0 && ((head_x == pos_x && head_y == pos_y) || head_x == 0 || head_x == (GAME_WIDTH+1) || head_y == 0 || head_y == (GAME_HEIGHT+1));
 
 	always @(*) begin
 		dir_in = dir_out;
@@ -80,7 +82,7 @@ module snake (
 		next_pos_y = pos_y;
 		next_pos_valid = pos_valid;
 
-		if (pos == 218 && i_tick) begin
+		if (pos == (MAX_LENGTH-2) && i_tick) begin
 			case (i_dir)
 				2'b00: next_head_y = head_y + 1;
 				2'b01: next_head_y = head_y - 1;
@@ -93,7 +95,7 @@ module snake (
 			next_pos_y = next_head_y;
 			next_pos = 0;
 			next_pos_valid = 1;
-		end else if (pos == 219) begin
+		end else if (pos == (MAX_LENGTH-1)) begin
 			next_pos_x = head_x;
 			next_pos_y = head_y;
 			next_pos = 0;
@@ -118,10 +120,10 @@ module snake (
 	always @(posedge clk) begin
 		if (!rst_n) begin
 			head_dir <= 0;
-			head_x <= 10;
-			head_y <= 5;
+			head_x <= GAME_WIDTH / 2;
+			head_y <= GAME_HEIGHT / 2;
 			length <= 1;
-			pos <= 219;
+			pos <= (MAX_LENGTH-1);
 			pos_valid <= 0;
 		end else begin
 			head_dir <= next_head_dir;

@@ -3,6 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+`include "common.sv"
+
 module vga (
 	input  logic       clk,
 	input  logic       rst_n,
@@ -51,13 +53,13 @@ module vga (
 		.hsync(hsync)
 	);
 
-	logic [2:0] row_buffer [19:0];
+	logic [2:0] row_buffer [GAME_WIDTH-1:0];
 
 	always @(*) begin
 		rgb = 6'b000000;
 		if (!visible) begin
 			rgb = 6'b000000;
-		end else if (tx == 0 || tx == 21) begin
+		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
 			rgb = 6'b111111;
 		end else begin
 			case (row_buffer[tx-1])
@@ -75,7 +77,7 @@ module vga (
 
 	always @(posedge clk) begin
 		if (hsync || !rst_n) begin		
-			for (int i = 0; i < 20; i = i + 1) begin
+			for (int i = 0; i < GAME_WIDTH; i = i + 1) begin
 				row_buffer[i] <= 3'b0;
 			end
 		end

@@ -3,6 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+`include "common.sv"
+
 module shiftreg # (
     parameter WIDTH = 2,
     parameter DEPTH = 220

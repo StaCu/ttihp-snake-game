@@ -3,6 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+`include "common.sv"
+
 module random (
 	input  logic       clk,
 	input  logic       rst_n,

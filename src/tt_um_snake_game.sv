@@ -4,6 +4,7 @@
  */
 
 `default_nettype none
+`include "common.sv"
 
 module tt_um_snake_game (
 	input  logic [7:0] ui_in,    // Dedicated inputs

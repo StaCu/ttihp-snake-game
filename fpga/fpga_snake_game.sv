@@ -4,6 +4,7 @@
  */
 
 `default_nettype wire
+`include "common.sv"
 
 module fpga_snake_game (
 	input  logic       CLK100MHZ,
