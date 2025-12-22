@@ -35,10 +35,16 @@ module vga (
 	logic visible;
 	logic [9:0] px;
 	logic [8:0] py;
+	logic [9:0] next_px;
+	logic [8:0] next_py;
 	logic [4:0] tx;
 	logic [3:0] ty;
+	logic [4:0] next_tx;
+	logic [3:0] next_ty;
 	assign tx = px[9:5];
 	assign ty = py[8:5];
+	assign next_tx = next_px[9:5];
+	assign next_ty = next_py[8:5];
 
 	logic [5:0] rgb;
 	assign r = rgb[5:4];
@@ -50,6 +56,8 @@ module vga (
 		.rst_n(rst_n),
 		.px(px),
 		.py(py),
+		.next_px(next_px),
+		.next_py(next_py),
 		.visible(visible),
 		.vsync(vsync),
 		.hsync(hsync)
@@ -91,13 +99,9 @@ module vga (
 	end
 
 	always @(posedge clk) begin
-		if (hsync) begin
-			for (int i = 0; i < GAME_WIDTH; i = i + 1) begin
-				row_buffer[i] <= 2'b00;
-			end
-		end
-
-		if (ty == snake_y && snake_valid) begin
+		if (ty != next_ty && tx != next_tx && visible) begin
+			row_buffer[tx-1] <= 2'b00;
+		end else if (snake_valid && snake_y == next_ty && (snake_x < tx || ty == next_ty)) begin
 			row_buffer[snake_x-1] <= { pos_counter[1] || (pos_counter == 0), pos_counter[0] };
 		end
 	end

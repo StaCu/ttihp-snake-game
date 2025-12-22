@@ -10,6 +10,8 @@ module vga_sync (
 	input  logic       rst_n,
 	output logic [9:0] px,
 	output logic [8:0] py,
+	output logic [9:0] next_px,
+	output logic [8:0] next_py,
 	output logic       visible,
 	output logic       vsync,
 	output logic       hsync
@@ -18,10 +20,16 @@ module vga_sync (
 	logic display_on;
 	logic [9:0] hpos;
 	logic [9:0] vpos;
+	logic [9:0] next_hpos;
+	logic [9:0] next_vpos;
 	logic reset;
+	assign next_hpos = hpos + 1;
+	assign next_vpos = vpos + 1;
 
 	assign px = hpos;
 	assign py = vpos[8:0];
+	assign next_px = next_hpos;
+	assign next_py = next_vpos[8:0];
 	assign visible = display_on;
 	assign reset = !rst_n;
 
@@ -51,7 +59,7 @@ module vga_sync (
 	always @(posedge clk) begin
 		hsync <= (hpos >= H_SYNC_START && hpos <= H_SYNC_END);
 		if (hmaxxed) hpos <= 0;
-		else hpos <= hpos + 1;
+		else hpos <= next_hpos;
 	end
 
 	// vertical position counter
@@ -59,7 +67,7 @@ module vga_sync (
 		vsync <= (vpos >= V_SYNC_START && vpos <= V_SYNC_END);
 		if (hmaxxed)
 			if (vmaxxed) vpos <= 0;
-			else vpos <= vpos + 1;
+			else vpos <= next_vpos;
 	end
 
 	// display_on is set when beam is in "safe" visible frame
