@@ -56,8 +56,10 @@ module apple (
 
 	// Test if the apple position is outside the game field (out of bounds).
 	// => The galois rng will never return 0, so no need to check it
-	logic apple_x_oob = /*apple_x == 0 ||*/apple_x > GAME_WIDTH;
-	logic apple_y_oob = /*apple_y == 0 ||*/apple_y > GAME_HEIGHT;
+	logic apple_x_oob;
+	logic apple_y_oob;
+	assign apple_x_oob = /*apple_x == 0 ||*/apple_x > GAME_WIDTH;
+	assign apple_y_oob = /*apple_y == 0 ||*/apple_y > GAME_HEIGHT;
 
 	always @(*) begin
 		// Update the rng when the apple has a valid position.

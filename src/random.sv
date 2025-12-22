@@ -15,8 +15,10 @@ module random (
 
 	logic [3:0] lfsr4;
 	logic [4:0] lfsr5;
-	logic feedback4 = lfsr4[0] ^ lfsr4[3];
-	logic feedback5 = lfsr5[2] ^ lfsr5[4];
+	logic feedback4;
+	logic feedback5;
+	assign feedback4 = lfsr4[0] ^ lfsr4[3];
+	assign feedback5 = lfsr5[2] ^ lfsr5[4];
 
 	assign rng4 = lfsr4;
 	assign rng5 = lfsr5;
@@ -28,9 +30,6 @@ module random (
 		end else if (update) begin
 			lfsr4 <= { lfsr4[2:0], feedback4 };
 			lfsr5 <= { lfsr5[3:0], feedback5 };
-		end else begin
-			lfsr4 <= lfsr4;
-			lfsr5 <= lfsr5;
 		end
 	end
 
