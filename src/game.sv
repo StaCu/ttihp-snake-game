@@ -51,7 +51,6 @@ module game (
 		.o_tick(tick)
 	);
 
-	logic [1:0] curr_dir;
 	logic [1:0] head_dir;
 	logic [1:0] next_dir;
 	logic new_user_input;
@@ -90,7 +89,6 @@ module game (
 		.i_tick(tick & apply_tick),
 		.i_dir(next_dir),
 		.o_head_dir(head_dir),
-		.o_dir(curr_dir),
 		.o_head_x(head_x),
 		.o_head_y(head_y),
 		.o_pos_x(pos_x),

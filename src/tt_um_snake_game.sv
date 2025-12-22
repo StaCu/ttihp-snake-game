@@ -17,34 +17,55 @@ module tt_um_snake_game (
 	input  logic       rst_n     // reset_n - low to reset
 );
 
-	// All output pins must be assigned. If not used, assign to 0.
-	//assign uo_out       = 8'b0;
-	assign uio_out[7:3] = 5'b0;
-	assign uio_oe       = 8'b00000111;
-
 	// List all unused inputs to prevent warnings
 	logic _unused = &{ena, uio_in, ui_in[7:6], 1'b0};
+
+	logic       up;
+	logic       down;
+	logic       left;
+	logic       right;
+	logic       pause;
+	logic       restart;
+	assign up      = ui_in[0];
+	assign down    = ui_in[1];
+	assign left    = ui_in[2];
+	assign right   = ui_in[3];
+	assign pause   = ui_in[4];
+	assign restart = ui_in[5];
+
+	logic [1:0] vga_r;
+	logic [1:0] vga_g;
+	logic [1:0] vga_b;
+	logic       vga_hsync;
+	logic       vga_vsync;
+	assign uo_out = {vga_hsync, vga_b[0], vga_g[0], vga_r[0], vga_vsync, vga_b[1], vga_g[1], vga_r[1]};
+
+	logic       failure;
+	logic       success;
+	logic       eat;
+	assign uio_out = { 5'b0, eat, success, failure };
+	assign uio_oe  = 8'b00000111;
 
 	game game_inst (
 		.clk(clk),
 		.rst_n(rst_n),
 
-		.i_up(ui_in[0]),
-		.i_down(ui_in[1]),
-		.i_left(ui_in[2]),
-		.i_right(ui_in[3]),
-		.i_pause(ui_in[4]),
-		.i_restart(ui_in[5]),
+		.i_up(up),
+		.i_down(down),
+		.i_left(left),
+		.i_right(right),
+		.i_pause(pause),
+		.i_restart(restart),
 
-		.o_vga_r({ uo_out[0], uo_out[4] }),
-		.o_vga_g({ uo_out[1], uo_out[5] }),
-		.o_vga_b({ uo_out[2], uo_out[6] }),
-		.o_vga_vsync(uo_out[3]),
-		.o_vga_hsync(uo_out[7]),
+		.o_vga_r(vga_r),
+		.o_vga_g(vga_g),
+		.o_vga_b(vga_b),
+		.o_vga_vsync(vga_vsync),
+		.o_vga_hsync(vga_hsync),
 
-		.o_failure(uio_out[0]),
-		.o_success(uio_out[1]),
-		.o_eat(uio_out[2])
+		.o_failure(failure),
+		.o_success(success),
+		.o_eat(eat)
 	);
 
 endmodule

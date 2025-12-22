@@ -12,7 +12,6 @@ module snake (
 	input  logic       i_tick,
 	input  logic [1:0] i_dir,
 	output logic [1:0] o_head_dir,
-	output logic [1:0] o_dir,
 
 	input  logic       i_eat,
 
@@ -42,8 +41,6 @@ module snake (
 		.in(dir_in),
 		.first(dir_first)
 	);
-
-	assign o_dir = dir_first;
 
 	logic [1:0] head_dir;
 	logic [4:0] head_x;
