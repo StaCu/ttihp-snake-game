@@ -7,14 +7,48 @@ You can also include images in this folder and reference them in the markdown. E
 512 kb in size, and the combined size of all images must be less than 1 MB.
 -->
 
+# TT Snake Game
+
+![Simon Says Game](vga_output.jpeg)
+
 ## How it works
 
-Explain how your project works
+Snake is a simple video game where the player controls a snake.
+The goal is to eat food while preventing the snake from biting itself or moving into the walls.
+Every time the snake eats food it gets a bit longer, increasing the difficulty.
+
+The game is won if the snake fills the entire area.
+
+The current state of the game is displayed on a VGA monitor and the player can control the snake using four buttons.
 
 ## How to test
 
-Explain how to use your project
+The clock input frequency must be set to the VGA frequency of `25,175,000 Hz`.
+
+Connect the VGA PMOD to the output pins.
+Connect the control buttons to the input pins as follows:
+
+function | ui_in    | optional?
+---------|----------|-----------
+up       | ui_in[0] | no
+down     | ui_in[1] | no
+left     | ui_in[2] | no
+right    | ui_in[3] | no
+pause    | ui_in[4] | yes (if 0)
+restart  | ui_in[5] | yes (if 0)
+
+The game speed can be changed by pressing up/down while asserting restart.
+It is linked to the VGA display refresh rate with a controllable factor (1-32), which slows down the game speed accordingly.
+Default is 15, which results in 4 updates per second.
+
+Additionally, the game exposes three signals about the game state that could be used to e.g. add external sound effects.
+
+function | uio_out    | duration
+---------|------------|-----------------
+failure  | uio_out[0] | until restart
+success  | uio_out[1] | until restart
+eat      | uio_out[2] | one clock cycle
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+Playing the game requires the VGA PMOD, four buttons for movement controls and two optional buttons for pause and restart.
