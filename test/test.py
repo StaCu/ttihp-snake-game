@@ -39,19 +39,19 @@ async def test(dut):
     dut._log.info("Wait for hsync")
     for _ in range(800):
         await ClockCycles(dut.clk, 1)
-        if int(dut.ui_out.value) & 0b00001000:
+        if int(dut.uo_out.value) & 0b00001000:
             break
     # hsync found
-    assert int(dut.ui_out.value) & 0b00001000
+    assert int(dut.uo_out.value) & 0b00001000
 
     # wait for vsync
     dut._log.info("Wait for vsync")
     for _ in range(800*525):
         await ClockCycles(dut.clk, 1)
-        if int(dut.ui_out.value) & 0b10000000:
+        if int(dut.uo_out.value) & 0b10000000:
             break
     # vsync found
-    assert int(dut.ui_out.value) & 0b10000000
+    assert int(dut.uo_out.value) & 0b10000000
 
     # Run the game for a few iterations
     dut._log.info("Start control sequence")
