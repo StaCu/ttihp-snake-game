@@ -9,7 +9,7 @@ You can also include images in this folder and reference them in the markdown. E
 
 # TT Snake Game
 
-![Simon Says Game](vga_output.jpeg)
+![Snake Game](vga_output.jpeg)
 
 ## How it works
 
