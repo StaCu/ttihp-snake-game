@@ -26,7 +26,19 @@ The current state of the game is displayed on a VGA monitor and the player can c
 The clock input frequency must be set to the VGA frequency of `25,175,000 Hz`.
 
 Connect the VGA PMOD to the output pins.
-Connect the control buttons to the input pins as follows:
+
+function | uo_out    | polarity
+---------|-----------|--------------------------------
+R1       | uo_out[0] |
+G1       | uo_out[1] |
+B1       | uo_out[2] |
+VSync    | uo_out[3] | 0 during image, 1 during pulse
+R0       | uo_out[4] |
+G0       | uo_out[5] |
+B0       | uo_out[4] |
+HSync    | uo_out[5] | 0 during image, 1 during pulse
+
+Connect the control buttons to the input pins as follows.
 
 function | ui_in    | optional?
 ---------|----------|-----------
@@ -40,6 +52,9 @@ restart  | ui_in[5] | yes (if 0)
 The game speed can be changed by pressing up/down while asserting restart.
 It is linked to the VGA display refresh rate with a controllable factor (1-32), which slows down the game speed accordingly.
 Default is 15, which results in 4 updates per second.
+
+Colorblind mode can be enabled by pressing right while asserting restart.
+This swaps the green and blue color channel, resulting in a blue snake.
 
 Additionally, the game exposes three signals about the game state that could be used to e.g. add external sound effects.
 

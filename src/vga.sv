@@ -29,7 +29,8 @@ module vga (
 
 	input  logic       failure,
 	input  logic       success,
-	input  logic       eat
+	input  logic       eat,
+	input  logic       colorblind
 );
 
 	logic visible;
@@ -48,8 +49,8 @@ module vga (
 
 	logic [5:0] rgb;
 	assign r = rgb[5:4];
-	assign g = rgb[3:2];
-	assign b = rgb[1:0];
+	assign g = colorblind ? rgb[1:0] : rgb[3:2];
+	assign b = colorblind ? rgb[3:2] : rgb[1:0];
 
 	vga_sync vga_sync_inst (
 		.clk(clk),

@@ -7,6 +7,7 @@ Uses 2 Tiles, one of which contains essentially just a giant shift register hold
 Includes VGA controller logic to play on the "big" screen.
 
 - [Read the documentation for project](docs/info.md)
+- [View the GDS](https://stacu.github.io/ttihp-snake-game/)
 
 ## What is Tiny Tapeout?
 
