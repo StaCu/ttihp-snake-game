@@ -29,9 +29,8 @@ async def test(dut):
     for _ in range(14):
         dut.ui_in.value = 0b100010
         await ClockCycles(dut.clk, 2)
-        dut.ui_in.value = 0b100010
+        dut.ui_in.value = 0b100000
         await ClockCycles(dut.clk, 2)
-    dut.ui_in.value = 0b100000
     await ClockCycles(dut.clk, 250)
     dut.ui_in.value = 0b000000
 
