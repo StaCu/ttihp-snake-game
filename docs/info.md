@@ -35,8 +35,8 @@ B1       | uo_out[2] |
 VSync    | uo_out[3] | 0 during image, 1 during pulse
 R0       | uo_out[4] |
 G0       | uo_out[5] |
-B0       | uo_out[4] |
-HSync    | uo_out[5] | 0 during image, 1 during pulse
+B0       | uo_out[6] |
+HSync    | uo_out[7] | 0 during image, 1 during pulse
 
 Connect the control buttons to the input pins as follows.
 

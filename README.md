@@ -6,7 +6,7 @@ The classic game "Snake" for Tiny Tapeout.
 Uses 2 Tiles, one of which contains essentially just a giant shift register holding the current state of the snake.
 Includes VGA controller logic to play on the "big" screen.
 
-- [Read the documentation for project](docs/info.md)
+- [Read the documentation](docs/info.md)
 - [View the GDS](https://stacu.github.io/ttihp-snake-game/)
 
 ## What is Tiny Tapeout?
