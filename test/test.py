@@ -54,21 +54,18 @@ async def test(dut):
 
     # Run the game for a few iterations
     dut._log.info("Start control sequence")
-    ctrl = [    #  9, 6 (start pos)
+    ctrl = [    #  9, 6 (start pos), 11, 4 (apple pos)
         0b0001, #  9, 7
-        0b0001, #  9, 8
-        0b0100, #  8, 8
-        0b0100, #  7, 8
-        0b0010, #  7, 7
-        0b0010, #  7, 6
-        0b1000, #  8, 6
-        0b1000, #  9, 6
-        0b0010, #  9, 5
-        0b0010, #  9, 4
-        0b0010, #  9, 3
-        0b0010, #  9, 2
-        0b0010, #  9, 1
-        0b0010, #  9, 0
+        0b1001, # 10, 7 (up -> up right, results in right)
+        0b1000, # 11, 7
+        0b0010, # 11, 6
+        0b0010, # 11, 5
+        0b0010, # 11, 4 (eat apple)
+        0b0100, # 10, 4
+        0b0010, # 10, 3
+        0b0001, # 10, 2 (down -> up, results in down)
+        0b0010, # 10, 1
+        0b0010, # 10, 0 (wall)
     ]
     # start control sequence in the middle of the frame
     await ClockCycles(dut.clk, 800*200)
@@ -77,7 +74,17 @@ async def test(dut):
         dut._log.info(f"i[{i}]: {ctrl[i]} | {int(dut.uio_out.value)}")
         # the game has neither succeeded nor failed
         assert int(dut.uio_out.value) & 0b011 == 0
-        await ClockCycles(dut.clk, 800*525)
+
+        if i == 5:
+            # the snake eats the apple
+            apple_eaten = False
+            for _ in range(800*525):
+                await ClockCycles(dut.clk, 1)
+                if int(dut.uio_out.value) & 0b100 != 0:
+                    apple_eaten = True
+            assert apple_eaten
+        else:
+            await ClockCycles(dut.clk, 800*525)
 
     # the game has failed
     assert int(dut.uio_out.value) == 0b001
