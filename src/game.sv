@@ -46,6 +46,7 @@ module game (
 		.rst_n(rst_n),
 		.i_up(i_up),
 		.i_down(i_down),
+		.i_right(i_right),
 		.i_restart(i_restart),
 		.i_vsync(tick_vsync && !i_pause),
 		.i_tick_done(tick_done),

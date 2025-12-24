@@ -11,6 +11,7 @@ module tickgen (
 
     input  logic       i_up,
     input  logic       i_down,
+    input  logic       i_right,
     input  logic       i_restart,
     input  logic       i_vsync,
     input  logic       i_tick_done,
