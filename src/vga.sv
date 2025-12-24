@@ -35,9 +35,9 @@ module vga (
 
 	logic visible;
 	logic [9:0] px;
-	logic [8:0] py;
+	logic [9:0] py;
 	logic [9:0] next_px;
-	logic [8:0] next_py;
+	logic [9:0] next_py;
 	logic [4:0] tx;
 	logic [3:0] ty;
 	logic [4:0] next_tx;

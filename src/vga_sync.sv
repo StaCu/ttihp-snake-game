@@ -9,29 +9,16 @@ module vga_sync (
 	input  logic       clk,
 	input  logic       rst_n,
 	output logic [9:0] px,
-	output logic [8:0] py,
+	output logic [9:0] py,
 	output logic [9:0] next_px,
-	output logic [8:0] next_py,
+	output logic [9:0] next_py,
 	output logic       visible,
 	output logic       vsync,
 	output logic       hsync
 );
 
-	logic display_on;
-	logic [9:0] hpos;
-	logic [9:0] vpos;
-	logic [9:0] next_hpos;
-	logic [9:0] next_vpos;
-	logic reset;
-	assign next_hpos = hpos + 1;
-	assign next_vpos = vpos + 1;
-
-	assign px = hpos;
-	assign py = vpos[8:0];
-	assign next_px = next_hpos;
-	assign next_py = next_vpos[8:0];
-	assign visible = display_on;
-	assign reset = !rst_n;
+	assign next_px = px + 1;
+	assign next_py = py + 1;
 
 	// declarations for TV-simulator sync parameters
 	// horizontal constants
@@ -52,25 +39,31 @@ module vga_sync (
 	parameter V_SYNC_END   = V_DISPLAY + V_FRONT + V_SYNC - 1;
 	parameter V_MAX        = V_DISPLAY + V_BACK + V_FRONT + V_SYNC - 1;
 
-	wire hmaxxed = (hpos == H_MAX) || reset; // set when hpos is maximum
-	wire vmaxxed = (vpos == V_MAX) || reset; // set when vpos is maximum
-
 	// horizontal position counter
 	always @(posedge clk) begin
-		hsync <= (hpos >= H_SYNC_START && hpos <= H_SYNC_END);
-		if (hmaxxed) hpos <= 0;
-		else hpos <= next_hpos;
+		if (!rst_n || px == H_MAX) begin
+			px <= 0;
+		end else begin
+			px <= next_px;
+		end
+		hsync <= (px >= H_SYNC_START && px <= H_SYNC_END);
 	end
 
 	// vertical position counter
 	always @(posedge clk) begin
-		vsync <= (vpos >= V_SYNC_START && vpos <= V_SYNC_END);
-		if (hmaxxed)
-			if (vmaxxed) vpos <= 0;
-			else vpos <= next_vpos;
+		if (!rst_n) begin
+			py <= 0;
+		end else if (px == H_MAX) begin
+			if (py == V_MAX) begin
+				py <= 0;
+			end else begin
+				py <= next_py;
+			end
+		end
+		vsync <= (py >= V_SYNC_START && py <= V_SYNC_END);
 	end
 
-	// display_on is set when beam is in "safe" visible frame
-	assign display_on = (hpos < H_DISPLAY) && (vpos < V_DISPLAY);
+	// visible is set when beam is in "safe" visible frame
+	assign visible = (px < H_DISPLAY) && (py < V_DISPLAY);
 
 endmodule
