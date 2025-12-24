@@ -56,12 +56,12 @@ async def test(dut):
     dut._log.info("Start control sequence")
     ctrl = [    #  9, 6 (start pos), 11, 4 (apple pos)
         0b0001, #  9, 7
-        0b1000, # 10, 7
-        0b1000, # 11, 7
+        0b0100, # 10, 7
+        0b0100, # 11, 7
         0b0010, # 11, 6
         0b0010, # 11, 5
         0b0010, # 11, 4 (eat apple)
-        0b0100, # 10, 4
+        0b1000, # 10, 4
         0b0010, # 10, 3
         0b0001, # 10, 2 (down -> up, results in down)
         0b0010, # 10, 1
