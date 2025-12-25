@@ -3,11 +3,33 @@
 # Tiny Tapeout Snake Game
 
 The classic game "Snake" for Tiny Tapeout.
-Uses 2 Tiles, one of which contains essentially just a giant shift register holding the current state of the snake.
-Includes VGA controller logic to play on the "big" screen.
+
+In "Snake" the player controls a snake within a limited area.
+The player must prevent the snake from moving into the walls or biting itself.
+Eating food increases the length of the snake, increasing the difficulty.
 
 - [Read the documentation](docs/info.md)
 - [View the GDS](https://stacu.github.io/ttihp-snake-game/)
+
+## FPGA Version
+
+The FPGA version exists for prototyping purposes and anyone who wants to play without Tiny Tapeout.
+It is built around the Nexys 4 board using a Xilnix Artix-7 FPGA, but porting to other platforms requires little effort.
+
+- [Read about the FPGA version](fpga/ReadMe.md)
+
+## Implementation
+
+In order to fit into as small an area as possible, the game uses a shift register to hold the current state of the snake.
+The position its head is stored explicitly, but the position of every other part of the snake is only computed on-the-fly by following
+the directions stored in the shift register.
+Each entry in the shift register is 2bit, holding the direction to get to the next part of the snake.
+As a result, detecting whether the snake bit itself requires iterating through the shift register once.
+
+The game uses 18x13 dimensions (plus a 1 wide border on each side) in order to neatly fit onto a 640x480 VGA display.
+VGA controller logic is included to play on the "big" screen.
+
+The game uses 2 Tiny Tapeout tiles, one of which contains essentially just the giant shift register. 
 
 ## What is Tiny Tapeout?
 
@@ -15,33 +37,3 @@ Tiny Tapeout is an educational project that aims to make it easier and cheaper t
 
 To learn more and get started, visit https://tinytapeout.com.
 
-## Set up your Verilog project
-
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
-
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
-
-## Enable GitHub actions to build the results page
-
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
-
-## Resources
-
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
-
-## What next?
-
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
