@@ -21,7 +21,7 @@ It is built around the Nexys 4 board using a Xilnix Artix-7 FPGA, but porting to
 ## Implementation
 
 In order to fit into as small an area as possible, the game uses a shift register to hold the current state of the snake.
-The position its head is stored explicitly, but the position of every other part of the snake is only computed on-the-fly by following
+The position of its head is stored explicitly, but the position of every other part of the snake is only computed on-the-fly by following
 the directions stored in the shift register.
 Each entry in the shift register is 2bit, holding the direction to get to the next part of the snake.
 As a result, detecting whether the snake bit itself requires iterating through the shift register once.
