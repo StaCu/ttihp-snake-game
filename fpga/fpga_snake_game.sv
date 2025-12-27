@@ -27,6 +27,7 @@ module fpga_snake_game (
 	assign VGA_B[1:0] = 0;
 
 	logic [24:0] counter;
+	logic [8:0] power_on_reset;
 
 	logic CLKFBOUT;
 	logic CLKFBOUTB;
@@ -43,9 +44,18 @@ module fpga_snake_game (
 	logic CLKOUT6;
 	logic LOCKED;
 
+	initial begin
+		counter <= 0;
+		power_on_reset <= 0;
+	end
+
 	always @(posedge CLKOUT0) begin
 		counter <= counter == 25174013 ? 0 : counter + 1;
 		LED[3] <= LED[3] ^ (counter == 25174013);
+
+		if (power_on_reset < 256) begin
+			power_on_reset <= power_on_reset + 1;
+		end
 	end
 
 	logic vsync;
@@ -55,7 +65,7 @@ module fpga_snake_game (
 
 	game game_inst (
 		.clk(CLKOUT0),
-		.rst_n(CPU_RESETN && LOCKED),
+		.rst_n(CPU_RESETN && LOCKED && power_on_reset[8]),
 
 		.i_up(BTNU),
 		.i_down(BTND),
