@@ -49,7 +49,7 @@ module game (
 		.i_right(i_right),
 		.i_restart(i_restart),
 		.i_vsync(tick_vsync && !i_pause),
-		.i_tick_done(tick_done),
+		.i_tick_done(tick_done || !apply_tick),
 		.o_tick(tick),
 		.o_colorblind(colorblind)
 	);
@@ -92,6 +92,7 @@ module game (
 		.i_tick(tick & apply_tick),
 		.i_dir(next_dir),
 		.o_head_dir(head_dir),
+		.o_tick_done(tick_done),
 		.o_head_x(head_x),
 		.o_head_y(head_y),
 		.o_pos_x(pos_x),
@@ -149,8 +150,6 @@ module game (
 	);
 
 	always @(*) begin
-		tick_done = pos_first;
-
 		// the next game tick can only happen when the following conditions are met:
 		// - the game has started
 		// - the next phase is provided by input

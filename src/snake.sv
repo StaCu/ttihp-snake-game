@@ -12,6 +12,7 @@ module snake (
 	input  logic       i_tick,
 	input  logic [1:0] i_dir,
 	output logic [1:0] o_head_dir,
+	output logic       o_tick_done,
 
 	input  logic       i_eat,
 
@@ -73,6 +74,7 @@ module snake (
 
 	always @(*) begin
 		dir_in = dir_out;
+		o_tick_done = 0;
 
 		next_head_dir = head_dir;
 		next_head_x = head_x;
@@ -96,6 +98,7 @@ module snake (
 			next_pos_y = next_head_y;
 			next_pos = 0;
 			next_pos_valid = 1;
+			o_tick_done = 1;
 		end else if (pos == (MAX_LENGTH-1)) begin
 			next_pos_x = head_x;
 			next_pos_y = head_y;
