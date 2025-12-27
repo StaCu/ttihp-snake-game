@@ -36,7 +36,7 @@ COMPILE_ARGS 		+= -I$(SRC_DIR)
 VERILOG_SOURCES += $(PWD)/tb.v
 TOPLEVEL = tb
 
-ifdef FAST
+ifeq ($(FAST),yes)
 
 COMPILE_ARGS    += -DRTL_SIMULATION
 # List test modules to run, separated by commas and without the .py suffix:

@@ -105,17 +105,17 @@ async def test_success(dut):
         ax = int(apple_x.value)
         l = int(length.value)
         if y == 13 and x != 18:
-            input = 0b0100
+            input = 0b1000
         elif x % 2 == 0:
             if y == 1:
-                input = 0b1000
-            else:
-                input = 0b0010
-        else:
-            if y == 12 and x != 1 and not (ax > x and l < (19-x)*12):
-                input = 0b1000
+                input = 0b0100
             else:
                 input = 0b0001
+        else:
+            if y == 12 and x != 1 and not (ax > x and l < (19-x)*12):
+                input = 0b0100
+            else:
+                input = 0b0010
         dut.ui_in.value = input
 
         if prev_x != x or prev_y != y:

@@ -85,10 +85,10 @@ module snake (
 
 		if (pos == (MAX_LENGTH-2) && i_tick) begin
 			case (i_dir)
-				2'b00: next_head_y = head_y + 1;
-				2'b01: next_head_y = head_y - 1;
-				2'b10: next_head_x = head_x + 1;
-				2'b11: next_head_x = head_x - 1;
+				2'b00: next_head_y = head_y - 1;
+				2'b01: next_head_y = head_y + 1;
+				2'b10: next_head_x = head_x - 1;
+				2'b11: next_head_x = head_x + 1;
 			endcase
 			dir_in = i_dir;
 			next_head_dir = i_dir;
@@ -103,10 +103,10 @@ module snake (
 			next_pos_valid = 1;
 		end else begin
 			case (dir_first)
-				2'b00: next_pos_y = pos_y - 1;
-				2'b01: next_pos_y = pos_y + 1;
-				2'b10: next_pos_x = pos_x - 1;
-				2'b11: next_pos_x = pos_x + 1;
+				2'b00: next_pos_y = pos_y + 1;
+				2'b01: next_pos_y = pos_y - 1;
+				2'b10: next_pos_x = pos_x + 1;
+				2'b11: next_pos_x = pos_x - 1;
 			endcase
 			next_pos = pos + 1;
 			if (pos == length) begin
@@ -114,15 +114,15 @@ module snake (
 			end
 		end
 		if (!rst_n) begin
-			dir_in = 0;
+			dir_in = 2'b11;
 		end
 	end
 
 	always @(posedge clk) begin
 		if (!rst_n) begin
-			head_dir <= 0;
-			head_x <= GAME_WIDTH / 2;
-			head_y <= GAME_HEIGHT / 2;
+			head_dir <= 2'b11;
+			head_x <= (GAME_WIDTH + 3) / 2;
+			head_y <= (GAME_HEIGHT + 3) / 2;
 			length <= 1;
 			pos <= (MAX_LENGTH-1);
 			pos_valid <= 0;

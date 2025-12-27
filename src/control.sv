@@ -32,13 +32,13 @@ module control (
 
     always @(*) begin
         next_dir = dir;
-        if (i_up && backwards != 2'b00 && (i_head_dir != 2'b00 || !start)) begin
+        if (         i_up    && backwards != 2'b00 && (i_head_dir != 2'b00 || (!i_left && !i_right))) begin
             next_dir = 2'b00;
-        end else if (i_down && backwards != 2'b01 && i_head_dir != 2'b01) begin
+        end else if (i_down  && backwards != 2'b01 && (i_head_dir != 2'b01 || (!i_left && !i_right))) begin
             next_dir = 2'b01;
-        end else if (i_left && backwards != 2'b10 && i_head_dir != 2'b10) begin
+        end else if (i_left  && backwards != 2'b10 && (i_head_dir != 2'b10 || (!i_up && !i_down))) begin
             next_dir = 2'b10;
-        end else if (i_right && backwards != 2'b11 && i_head_dir != 2'b11) begin
+        end else if (i_right && backwards != 2'b11 && (i_head_dir != 2'b11 || (!i_up && !i_down))) begin
             next_dir = 2'b11;
         end
     end
@@ -46,9 +46,9 @@ module control (
     always @(posedge clk) begin
         if (!rst_n) begin
             start <= 0;
-            dir <= 2'b01;
+            dir <= 2'b10;
         end else begin
-            start <= start | dir != 2'b01;
+            start <= start | dir != 2'b10;
             dir <= next_dir;
         end
     end

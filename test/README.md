@@ -24,6 +24,7 @@ This then allows for much longer tests including a full run of an entire success
 To run, use:
 
 ```sh
-make -B FAST
+make -B FAST=yes
 ```
 
+You may need to delete the `sim_build` folder before/after running fast simulation.
