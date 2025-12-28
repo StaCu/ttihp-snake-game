@@ -23,6 +23,7 @@ module vga (
 	input  logic [3:0] snake_head_y,
 	input  logic [4:0] snake_x,
 	input  logic [3:0] snake_y,
+	input  logic [1:0] snake_dir,
 	input  logic       snake_first,
 	input  logic       snake_last,
 	input  logic       snake_valid,
@@ -64,46 +65,75 @@ module vga (
 		.hsync(hsync)
 	);
 
-	logic [1:0] pos_counter;
-	logic [1:0] row_buffer [GAME_WIDTH-1:0];
+	logic [1:0] sx;
+	logic [1:0] sy;
+	logic [1:0] prev_dir;
+	logic [3:0] decode_dir;
+	logic [3:0] decode_prev_dir;
+	logic [3:0] row_buffer [GAME_WIDTH-1:0];
+
+	always @(*) begin
+		decode_dir = 0;
+		decode_dir[snake_dir] = 1;
+		decode_prev_dir = 0;
+		decode_prev_dir[prev_dir] = 1;
+	end
 
 	always @(*) begin
 		rgb = 6'b000000;
 		if (!visible) begin
 			rgb = 6'b000000;
-		end else if (tx == snake_head_x && ty == snake_head_y && game_rst_n) begin
-			rgb = 6'b101000;
 		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
 			case ({ success, failure })
 				2'b10: rgb = 6'b001000;
 				2'b01: rgb = 6'b100000;
 				default: rgb = 6'b111111;
 			endcase
-		end else if (tx == apple_x && ty == apple_y && apple_valid) begin
-			rgb = 6'b110000;
 		end else begin
-			case (row_buffer[tx-1])
-				0: rgb = 6'b000000;
-				1: rgb = 6'b000100;
-				2: rgb = 6'b001000;
-				3: rgb = 6'b001100;
-			endcase
+			if ({sx, sy} == 4'b0101 && row_buffer[tx-1] != 0) begin
+				// snake center
+				rgb = 6'b001100;
+			end else if ({sx, sy} == 4'b0101 && tx == apple_x && ty == apple_y && apple_valid) begin
+				// apple center
+				rgb = 6'b110000;
+			end else if ({sx, sy} == 4'b0110 && row_buffer[tx-1][0]) begin
+				// top-center
+				rgb = 6'b001100;
+			end else if ({sx, sy} == 4'b0100 && row_buffer[tx-1][1]) begin
+				// bottom-center
+				rgb = 6'b001100;
+			end else if ({sx, sy} == 4'b1001 && row_buffer[tx-1][2]) begin
+				// left-center
+				rgb = 6'b001100;
+			end else if ({sx, sy} == 4'b0001 && row_buffer[tx-1][3]) begin
+				// right-center
+				rgb = 6'b001100;
+			end else /*if (row_buffer[tx-1] == 0 || {sx, sy} == 4'b0000 || {sx, sy} == 4'b1000 || {sx, sy} == 4'b0010 || {sx, sy} == 4'b1010)*/ begin
+				// no snake or corner
+				rgb = 6'b000000;
+			end
 		end
 	end
 
 	always @(posedge clk) begin
-		if (snake_first) begin
-			pos_counter <= 1;
-		end else begin
-			pos_counter <= pos_counter + 1;
-		end
+		prev_dir <= { snake_dir[1], ~snake_dir[0] };
+		case (px[4:0])
+			3: sx <= 1;
+			27: sx <= 2;
+			31: sx <= 0;
+		endcase
+		case (py[4:0])
+			0: sy <= 0;
+			4: sy <= 1;
+			28: sy <= 2;
+		endcase
 	end
 
 	always @(posedge clk) begin
 		if (ty != next_ty && tx != next_tx && visible) begin
 			row_buffer[tx-1] <= 2'b00;
 		end else if (snake_valid && snake_y == next_ty && (snake_x < tx || ty == next_ty)) begin
-			row_buffer[snake_x-1] <= { pos_counter[1] || (pos_counter == 0), pos_counter[0] };
+			row_buffer[snake_x-1] <= (decode_prev_dir & ~{snake_first, snake_first, snake_first, snake_first}) | (decode_dir & ~{snake_last, snake_last, snake_last, snake_last});
 		end
 	end
 
