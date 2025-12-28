@@ -50,8 +50,8 @@ module vga (
 
 	logic [5:0] rgb;
 	assign r = rgb[5:4];
-	assign g = colorblind ? rgb[1:0] : rgb[3:2];
-	assign b = colorblind ? rgb[3:2] : rgb[1:0];
+	assign g = rgb[3:2];
+	assign b = rgb[1:0];
 
 	vga_sync vga_sync_inst (
 		.clk(clk),
@@ -75,6 +75,16 @@ module vga (
 	logic [3:0] decode_prev_dir;
 	logic [3:0] two_hot_dir;
 	logic [3:0] row_buffer [BUFFER_WIDTH-1:0];
+	logic [1:0] color;
+
+	always @(*) begin
+		case (color)
+			0: rgb = 6'b000000;
+			1: rgb = colorblind ? 6'b000011 : 6'b001100;
+			2: rgb = 6'b110000;
+			3: rgb = 6'b111111;
+		endcase
+	end
 
 	always @(*) begin
 		decode_dir = 0;
@@ -85,36 +95,36 @@ module vga (
 	end
 
 	always @(*) begin
-		rgb = 6'b000000;
+		color = 0;
 		if (!visible) begin
-			rgb = 6'b000000;
+			color = 0;
 		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
 			case ({ success, failure })
-				2'b10: rgb = 6'b001000;
-				2'b01: rgb = 6'b100000;
-				default: rgb = 6'b111111;
+				2'b10: color = 1;
+				2'b01: color = 2;
+				default: color = 3;
 			endcase
 		end else if ({sx, sy} == 4'b0101 && row_buffer[0] != 0) begin
 			// snake center
-			rgb = 6'b001100;
+			color = 1;
 		end else if ({sx, sy} == 4'b0101 && tx == apple_x && ty == apple_y && apple_valid) begin
 			// apple center
-			rgb = 6'b110000;
+			color = 2;
 		end else if ({sx, sy} == 4'b0110 && row_buffer[0][0]) begin
 			// top-center
-			rgb = 6'b001100;
+			color = 1;
 		end else if ({sx, sy} == 4'b0100 && row_buffer[0][1]) begin
 			// bottom-center
-			rgb = 6'b001100;
+			color = 1;
 		end else if ({sx, sy} == 4'b1001 && row_buffer[0][2]) begin
 			// left-center
-			rgb = 6'b001100;
+			color = 1;
 		end else if ({sx, sy} == 4'b0001 && row_buffer[0][3]) begin
 			// right-center
-			rgb = 6'b001100;
+			color = 1;
 		end else /*if (row_buffer[0] == 0 || {sx, sy} == 4'b0000 || {sx, sy} == 4'b1000 || {sx, sy} == 4'b0010 || {sx, sy} == 4'b1010)*/ begin
 			// no snake or corner
-			rgb = 6'b000000;
+			color = 0;
 		end
 	end
 
