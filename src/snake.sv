@@ -126,8 +126,8 @@ module snake (
 	always @(posedge clk) begin
 		if (!rst_n) begin
 			head_dir <= 2'b11;
-			head_x <= (GAME_WIDTH + 3) / 2;
-			head_y <= (GAME_HEIGHT + 3) / 2;
+			head_x <= START_POS_X;
+			head_y <= START_POS_Y;
 			length <= 1;
 			pos <= (MAX_LENGTH-1);
 			pos_valid <= 0;
