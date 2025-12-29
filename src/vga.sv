@@ -82,7 +82,7 @@ module vga (
 	always @(*) begin
 		case (color)
 			0: rgb = 6'b000000;
-			1: rgb = colorblind ? 6'b000011 : 6'b001100;
+			1: rgb = colorblind ? 6'b001111 : 6'b001100;
 			2: rgb = 6'b110000;
 			3: rgb = 6'b111111;
 		endcase
@@ -158,14 +158,14 @@ module vga (
 		for (int i = 0; i < BUFFER_WIDTH; i = i + 1) begin
 			if (px[4:0] == 31) begin
 				if (i+1 == row_buffer_widx && row_buffer_write) begin
-					row_buffer[i] <= two_hot_dir;
+					row_buffer[i] <= two_hot_dir | row_buffer[i+1];
 				end else if (i == BUFFER_WIDTH-1) begin
 					row_buffer[i] <= 0;
 				end else begin
 					row_buffer[i] <= row_buffer[i+1];
 				end
 			end else if (i == row_buffer_widx && row_buffer_write) begin
-				row_buffer[i] <= two_hot_dir;
+				row_buffer[i] <= two_hot_dir | row_buffer[i];
 			end else begin
 				row_buffer[i] <= row_buffer[i];
 			end
