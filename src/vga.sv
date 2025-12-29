@@ -104,28 +104,15 @@ module vga (
 				2'b01: color = 2;
 				default: color = 3;
 			endcase
-		end else if ({sx, sy} == 4'b0110 && row_buffer[0][0]) begin
-			// top-center
-			color = 1;
-		end else if ({sx, sy} == 4'b0100 && row_buffer[0][1]) begin
-			// bottom-center
-			color = 1;
-		end else if ({sx, sy} == 4'b1001 && row_buffer[0][2]) begin
-			// left-center
-			color = 1;
-		end else if ({sx, sy} == 4'b0001 && row_buffer[0][3]) begin
-			// right-center
-			color = 1;
-		end else if ({sx, sy} == 4'b0101 && row_buffer[0] != 0) begin
-			// snake center
-			color = 1;
-		end else if ({sx, sy} == 4'b0101 && tx == apple_x && ty == apple_y && apple_valid) begin
-			// apple center
-			color = 2;
-		end else /*if (row_buffer[0] == 0 || {sx, sy} == 4'b0000 || {sx, sy} == 4'b1000 || {sx, sy} == 4'b0010 || {sx, sy} == 4'b1010)*/ begin
-			// no snake or corner
-			color = 0;
-		end
+		end else casex ({sx, sy, row_buffer[0], |row_buffer[0], tx == apple_x && ty == apple_y && apple_valid})
+			10'b0110_xxx1_x_x: color = 1; // top-center
+			10'b0100_xx1x_x_x: color = 1; // bottom-center
+			10'b1001_x1xx_x_x: color = 1; // left-center
+			10'b0001_1xxx_x_x: color = 1; // right-center
+			10'b0101_xxxx_1_x: color = 1; // snake-center
+			10'b0101_xxxx_0_x: color = 1; // apple-center
+			default: color = 0; // no snake or corner
+		endcase
 	end
 
 	always @(posedge clk) begin
