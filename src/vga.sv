@@ -52,6 +52,8 @@ module vga (
 	assign r = rgb[5:4];
 	assign g = rgb[3:2];
 	assign b = rgb[1:0];
+	logic s_vsync;
+	logic s_hsync;
 
 	vga_sync vga_sync_inst (
 		.clk(clk),
@@ -61,8 +63,8 @@ module vga (
 		.next_px(next_px),
 		.next_py(next_py),
 		.visible(visible),
-		.vsync(vsync),
-		.hsync(hsync)
+		.vsync(s_vsync),
+		.hsync(s_hsync)
 	);
 
 	parameter int BUFFER_WIDTH = (GAME_WIDTH/2);
@@ -94,7 +96,12 @@ module vga (
 		two_hot_dir = decode_prev_dir | decode_dir;
 	end
 
-	always @(*) begin
+	always @(posedge clk) begin
+		vsync <= s_vsync;
+		hsync <= s_hsync;
+	end
+
+	always @(posedge clk) begin
 		color = 0;
 		if (!visible) begin
 			color = 0;
@@ -110,7 +117,7 @@ module vga (
 			10'b1001_?1??_?_?: color = 1; // left-center
 			10'b0001_1???_?_?: color = 1; // right-center
 			10'b0101_????_1_?: color = 1; // snake-center
-			10'b0101_????_0_?: color = 1; // apple-center
+			10'b0101_????_0_1: color = 2; // apple-center
 			default: color = 0; // no snake or corner
 		endcase
 	end
