@@ -104,12 +104,6 @@ module vga (
 				2'b01: color = 2;
 				default: color = 3;
 			endcase
-		end else if ({sx, sy} == 4'b0101 && row_buffer[0] != 0) begin
-			// snake center
-			color = 1;
-		end else if ({sx, sy} == 4'b0101 && tx == apple_x && ty == apple_y && apple_valid) begin
-			// apple center
-			color = 2;
 		end else if ({sx, sy} == 4'b0110 && row_buffer[0][0]) begin
 			// top-center
 			color = 1;
@@ -122,6 +116,12 @@ module vga (
 		end else if ({sx, sy} == 4'b0001 && row_buffer[0][3]) begin
 			// right-center
 			color = 1;
+		end else if ({sx, sy} == 4'b0101 && row_buffer[0] != 0) begin
+			// snake center
+			color = 1;
+		end else if ({sx, sy} == 4'b0101 && tx == apple_x && ty == apple_y && apple_valid) begin
+			// apple center
+			color = 2;
 		end else /*if (row_buffer[0] == 0 || {sx, sy} == 4'b0000 || {sx, sy} == 4'b1000 || {sx, sy} == 4'b0010 || {sx, sy} == 4'b1010)*/ begin
 			// no snake or corner
 			color = 0;
