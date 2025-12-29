@@ -129,21 +129,39 @@ module vga (
 		endcase
 	end
 
-	always @(posedge clk) begin
+	logic [4:0] row_buffer_widx;
+	logic       row_buffer_write;
+
+	always @(*) begin
+		row_buffer_widx = snake_x - tx;
+		row_buffer_write = 0;
 		if (snake_valid) begin
 			if (snake_y == ty && snake_x > tx && snake_x < tx + BUFFER_WIDTH) begin
 				// same row
-				row_buffer[snake_x-tx] = two_hot_dir;
+				row_buffer_write = 1;
 			end else if (snake_y == next_ty && snake_x + ROW_OFFSET > tx && snake_x + ROW_OFFSET < tx + BUFFER_WIDTH) begin
 				// next row
-				row_buffer[snake_x+ROW_OFFSET-tx] = two_hot_dir;
+				row_buffer_widx = snake_x + ROW_OFFSET - tx;
+				row_buffer_write = 1;
 			end
 		end
-		if (px[4:0] == 31) begin
-			for (int i = 0; i < BUFFER_WIDTH-1; i = i + 1) begin
-				row_buffer[i] = row_buffer[i+1];
+	end
+
+	always @(posedge clk) begin
+		for (int i = 0; i < BUFFER_WIDTH; i = i + 1) begin
+			if (px[4:0] == 31) begin
+				if (i+1 == row_buffer_widx && row_buffer_write) begin
+					row_buffer[i] <= two_hot_dir;
+				end else if (i == BUFFER_WIDTH-1) begin
+					row_buffer[i] <= 0;
+				end else begin
+					row_buffer[i] <= row_buffer[i+1];
+				end
+			end else if (i == row_buffer_widx && row_buffer_write) begin
+				row_buffer[i] <= two_hot_dir;
+			end else begin
+				row_buffer[i] <= row_buffer[i];
 			end
-			row_buffer[BUFFER_WIDTH-1] = 0;
 		end
 	end
 
