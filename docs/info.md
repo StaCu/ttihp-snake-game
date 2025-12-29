@@ -56,7 +56,7 @@ It is linked to the VGA display refresh rate with a controllable factor (1-32), 
 Default is 15, which results in 4 updates per second.
 
 Colorblind mode can be enabled by pressing right while asserting restart.
-This swaps the green and blue color channel, resulting in a blue snake.
+This makes the snake appear cyan instead.
 
 Additionally, the game exposes three signals about the game state that could be used to e.g. add external sound effects.
 
