@@ -104,13 +104,13 @@ module vga (
 				2'b01: color = 2;
 				default: color = 3;
 			endcase
-		end else casex ({sx, sy, row_buffer[0], |row_buffer[0], tx == apple_x && ty == apple_y && apple_valid})
-			10'b0110_xxx1_x_x: color = 1; // top-center
-			10'b0100_xx1x_x_x: color = 1; // bottom-center
-			10'b1001_x1xx_x_x: color = 1; // left-center
-			10'b0001_1xxx_x_x: color = 1; // right-center
-			10'b0101_xxxx_1_x: color = 1; // snake-center
-			10'b0101_xxxx_0_x: color = 1; // apple-center
+		end else casez ({sx, sy, row_buffer[0], |row_buffer[0], tx == apple_x && ty == apple_y && apple_valid})
+			10'b0110_???1_?_?: color = 1; // top-center
+			10'b0100_??1?_?_?: color = 1; // bottom-center
+			10'b1001_?1??_?_?: color = 1; // left-center
+			10'b0001_1???_?_?: color = 1; // right-center
+			10'b0101_????_1_?: color = 1; // snake-center
+			10'b0101_????_0_?: color = 1; // apple-center
 			default: color = 0; // no snake or corner
 		endcase
 	end
