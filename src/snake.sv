@@ -20,6 +20,7 @@ module snake (
 	output logic [3:0] o_head_y,
 	output logic [4:0] o_pos_x,
 	output logic [3:0] o_pos_y,
+	output logic [1:0] o_pos_dir,
 	output logic       o_pos_first,
 	output logic       o_pos_last,
 	output logic       o_pos_valid,
@@ -66,6 +67,7 @@ module snake (
 
 	assign o_pos_x = pos_x;
 	assign o_pos_y = pos_y;
+	assign o_pos_dir = dir_first;
 	assign o_pos_first = pos == 0;
 	assign o_pos_last  = pos == length;
 	assign o_pos_valid = pos_valid;
@@ -124,8 +126,8 @@ module snake (
 	always @(posedge clk) begin
 		if (!rst_n) begin
 			head_dir <= 2'b11;
-			head_x <= (GAME_WIDTH + 3) / 2;
-			head_y <= (GAME_HEIGHT + 3) / 2;
+			head_x <= START_POS_X;
+			head_y <= START_POS_Y;
 			length <= 1;
 			pos <= (MAX_LENGTH-1);
 			pos_valid <= 0;

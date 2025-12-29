@@ -19,6 +19,9 @@ parameter logic [3:0] GAME_HEIGHT = 13;
 
 parameter logic [7:0] MAX_LENGTH = GAME_WIDTH * GAME_HEIGHT;
 
+parameter logic [4:0] START_POS_X = 10;
+parameter logic [3:0] START_POS_Y = 7;
+
 // Tick rate
 // The tick counter counts once per frame, i.e. 60 times per second
 //parameter logic [4:0] DEFAULT_TICK_COUNTER_MAX = 29; // 29+1 ==  2 ticks per second

@@ -75,6 +75,7 @@ module game (
 	logic [3:0] head_y;
 	logic [4:0] pos_x;
 	logic [3:0] pos_y;
+	logic [1:0] pos_dir;
 	logic       pos_first;
 	logic       pos_last;
 	logic       pos_valid;
@@ -97,6 +98,7 @@ module game (
 		.o_head_y(head_y),
 		.o_pos_x(pos_x),
 		.o_pos_y(pos_y),
+		.o_pos_dir(pos_dir),
 		.o_pos_first(pos_first),
 		.o_pos_last(pos_last),
 		.o_pos_valid(pos_valid),
@@ -139,6 +141,7 @@ module game (
 		.snake_head_y(head_y),
 		.snake_x(pos_x),
 		.snake_y(pos_y),
+		.snake_dir(pos_dir),
 		.snake_first(pos_first),
 		.snake_last(pos_last),
 		.snake_valid(pos_valid),

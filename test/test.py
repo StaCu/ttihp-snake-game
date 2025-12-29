@@ -54,11 +54,10 @@ async def test(dut):
 
     # Run the game for a few iterations
     dut._log.info("Start control sequence")
-    ctrl = [    # 10, 8 (start pos), 11, 4 (apple pos)
-        0b0000, # 10, 8 (none -> don't start yet)
-        0b0001, # 10, 7
-        0b0000, # 10, 6 (none -> keep direction)
-        0b0001, # 10, 5
+    ctrl = [    # 10, 7 (start pos), 11, 4 (apple pos)
+        0b0000, # 10, 7 (none -> don't start yet)
+        0b0001, # 10, 6
+        0b0000, # 10, 5 (none -> keep direction)
         0b0001, # 10, 4
         0b1000, # 11, 4 (eat apple)
         0b1010, # 11, 5 (right, down -> down, newer input)
@@ -77,7 +76,7 @@ async def test(dut):
         # the game has neither succeeded nor failed
         assert int(dut.uio_out.value) & 0b011 == 0
 
-        if i == 5:
+        if i == 4:
             # the snake eats the apple
             apple_eaten = False
             for _ in range(800*525):
