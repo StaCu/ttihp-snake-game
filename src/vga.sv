@@ -30,8 +30,7 @@ module vga (
 
 	input  logic       failure,
 	input  logic       success,
-	input  logic       eat,
-	input  logic       colorblind
+	input  logic       eat
 );
 
 	logic visible;
@@ -82,7 +81,7 @@ module vga (
 	always @(*) begin
 		case (color)
 			0: rgb = 6'b000000;
-			1: rgb = colorblind ? 6'b001111 : 6'b001100;
+			1: rgb = 6'b001100;
 			2: rgb = 6'b110000;
 			3: rgb = 6'b111111;
 		endcase

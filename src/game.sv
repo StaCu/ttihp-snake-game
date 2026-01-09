@@ -34,7 +34,6 @@ module game (
 	logic       start;
 	logic	    failure;
 	logic	    success;
-	logic       colorblind;
 	assign o_failure = failure;
 	assign o_success = success;
 
@@ -46,12 +45,10 @@ module game (
 		.rst_n(rst_n),
 		.i_up(i_up),
 		.i_down(i_down),
-		.i_right(i_right),
 		.i_restart(i_restart),
 		.i_vsync(tick_vsync && !i_pause),
 		.i_tick_done(tick_done || !apply_tick),
-		.o_tick(tick),
-		.o_colorblind(colorblind)
+		.o_tick(tick)
 	);
 
 	logic [1:0] head_dir;
@@ -148,8 +145,7 @@ module game (
 
 		.failure(failure),
 		.success(success),
-		.eat(snake_eat_apple),
-		.colorblind(colorblind)
+		.eat(snake_eat_apple)
 	);
 
 	always @(*) begin
