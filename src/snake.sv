@@ -13,6 +13,7 @@ module snake (
 	input  logic [1:0] i_dir,
 	output logic [1:0] o_head_dir,
 	output logic       o_tick_done,
+	output logic       o_tick_interval,
 
 	input  logic       i_eat,
 
@@ -65,6 +66,11 @@ module snake (
 	logic [7:0] next_pos;
 	logic       next_pos_valid;
 
+	logic       tick_interval;
+	logic       next_tick_interval;
+	assign o_tick_interval = tick_interval;
+	assign o_tick_done = tick_interval && pos[7];
+
 	assign o_pos_x = pos_x;
 	assign o_pos_y = pos_y;
 	assign o_pos_dir = dir_first;
@@ -76,7 +82,7 @@ module snake (
 
 	always @(*) begin
 		dir_in = dir_out;
-		o_tick_done = 0;
+		next_tick_interval = tick_interval && !pos[7];
 
 		next_head_dir = head_dir;
 		next_head_x = head_x;
@@ -100,7 +106,7 @@ module snake (
 			next_pos_y = next_head_y;
 			next_pos = 0;
 			next_pos_valid = 1;
-			o_tick_done = 1;
+			next_tick_interval = 1;
 		end else if (pos == (MAX_LENGTH-1)) begin
 			next_pos_x = head_x;
 			next_pos_y = head_y;
@@ -142,6 +148,9 @@ module snake (
 
 		pos_x <= next_pos_x;
 		pos_y <= next_pos_y;
+		// during reset, `pos[7] == 1` therefore `next_tick_interval == 0`
+		// => `tick_interval` does not need reset handling
+		tick_interval <= next_tick_interval;
 	end
 
 endmodule

@@ -30,14 +30,12 @@ module game (
 
 	logic       tick;
 	logic       tick_done;
-	logic       apply_tick;
 	logic       tick_vsync;
 	logic       start;
 	logic	    failure;
 	logic	    success;
 	assign o_failure = failure;
 	assign o_success = success;
-	assign o_tick = tick_done;
 
 	logic       restart;
 	assign restart = i_restart || !rst_n;
@@ -47,9 +45,9 @@ module game (
 		.rst_n(rst_n),
 		.i_up(i_up),
 		.i_down(i_down),
-		.i_restart(i_restart),
-		.i_vsync(tick_vsync && !i_pause),
-		.i_tick_done(tick_done || !apply_tick),
+		.i_restart(restart),
+		.i_vsync(tick_vsync && !i_pause && !failure && !success && start),
+		.i_tick_done(tick_done),
 		.o_tick(tick)
 	);
 
@@ -84,15 +82,16 @@ module game (
 	logic [4:0] apple_x;
 	logic [3:0] apple_y;
 	logic	    apple_ready;
-	assign o_eat = snake_eat_apple;
+	assign o_eat = !apple_ready && start;
 
 	snake snake_inst (
 		.clk(clk),
 		.rst_n(!restart),
-		.i_tick(tick & apply_tick),
+		.i_tick(tick && apple_ready),
 		.i_dir(next_dir),
 		.o_head_dir(head_dir),
 		.o_tick_done(tick_done),
+		.o_tick_interval(o_tick),
 		.o_head_x(head_x),
 		.o_head_y(head_y),
 		.o_pos_x(pos_x),
@@ -149,15 +148,6 @@ module game (
 		.success(success),
 		.eat(snake_eat_apple)
 	);
-
-	always @(*) begin
-		// the next game tick can only happen when the following conditions are met:
-		// - the game has started
-		// - the next phase is provided by input
-		// - the game itself is ready for a tick
-		// If the previous game tick has not been applied yet, we loose 1 tick
-		apply_tick = apple_ready && !failure && !success && start;
-	end
 
 	always @(posedge clk) begin
 		if (restart) begin

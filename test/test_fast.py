@@ -61,7 +61,7 @@ async def test_game_over(dut):
         await ClockCycles(dut.clk, 300)
 
     # The game fails
-    assert dut.uio_out.value == 0b001
+    assert dut.uio_out.value == 0b0001
 
 
 @cocotb.test()
@@ -128,5 +128,5 @@ async def test_success(dut):
             nochange += 1
         await ClockCycles(dut.clk, 100)
 
-    # The game succeeds
-    assert dut.uio_out.value == 0b010
+    # The game succeeds (and apple eaten)
+    assert dut.uio_out.value == 0b0110

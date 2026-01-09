@@ -80,10 +80,10 @@ module apple (
 			next_apple_x = rng5;
 			next_apple_y = rng4;
 			rng_update = 1;
+		end else if (i_snake_first && test) begin
+			next_ready = 1;
 		end else if (i_snake_first) begin
 			next_test = 1;
-		end else if (!i_snake_valid && test) begin
-			next_ready = 1;
 		end
 	end
 
