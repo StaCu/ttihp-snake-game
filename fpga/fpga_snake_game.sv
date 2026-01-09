@@ -14,7 +14,7 @@ module fpga_snake_game (
 	input  logic       BTNL,
 	input  logic       BTNR,
 	input  logic [1:0] SW,
-	output logic [3:0] LED,
+	output logic [4:0] LED,
 	output logic [3:0] VGA_R,
 	output logic [3:0] VGA_G,
 	output logic [3:0] VGA_B,
@@ -51,7 +51,7 @@ module fpga_snake_game (
 
 	always @(posedge CLKOUT0) begin
 		counter <= counter == 25174013 ? 0 : counter + 1;
-		LED[3] <= LED[3] ^ (counter == 25174013);
+		LED[4] <= LED[4] ^ (counter == 25174013);
 
 		if (power_on_reset < 256) begin
 			power_on_reset <= power_on_reset + 1;
@@ -82,7 +82,8 @@ module fpga_snake_game (
 
 		.o_failure(LED[0]),
 		.o_success(LED[1]),
-		.o_eat(LED[2])
+		.o_eat(LED[2]),
+		.o_tick(LED[3])
 	);
 
 	// Vivado Design Suite 7 Series FPGA and Zynq 7000 SoC Libraries Guide (UG953)

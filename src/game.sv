@@ -24,7 +24,8 @@ module game (
 
 	output logic       o_failure,
 	output logic       o_success,
-	output logic       o_eat
+	output logic       o_eat,
+	output logic       o_tick
 );
 
 	logic       tick;
@@ -36,6 +37,7 @@ module game (
 	logic	    success;
 	assign o_failure = failure;
 	assign o_success = success;
+	assign o_tick = tick_done;
 
 	logic       restart;
 	assign restart = i_restart || !rst_n;

@@ -43,8 +43,9 @@ module tt_um_snake_game (
 	logic       failure;
 	logic       success;
 	logic       eat;
-	assign uio_out = { 5'b0, eat, success, failure };
-	assign uio_oe  = 8'b00000111;
+	logic       tick;
+	assign uio_out = { 4'b0, tick, eat, success, failure };
+	assign uio_oe  = 8'b00001111;
 
 	game game_inst (
 		.clk(clk),
@@ -65,7 +66,8 @@ module tt_um_snake_game (
 
 		.o_failure(failure),
 		.o_success(success),
-		.o_eat(eat)
+		.o_eat(eat),
+		.o_tick(tick)
 	);
 
 endmodule

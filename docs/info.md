@@ -62,6 +62,7 @@ function | uio_out    | duration
 failure  | uio_out[0] | until restart
 success  | uio_out[1] | until restart
 eat      | uio_out[2] | one clock cycle
+tick     | uio_out[3] | one clock cycle
 
 ## External hardware
 
