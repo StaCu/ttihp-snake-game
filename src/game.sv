@@ -153,7 +153,7 @@ module game (
 	sound sound_inst (
 		.clk(clk),
 		.rst_n(rst_n),
-		.vsync(o_vga_vsync),
+		.vsync(tick_vsync),
 		.hsync(o_vga_hsync),
 		.failure(snake_failure && !failure),
 		.success(snake_success && !success),

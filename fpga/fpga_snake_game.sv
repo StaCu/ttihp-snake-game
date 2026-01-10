@@ -13,7 +13,7 @@ module fpga_snake_game (
 	input  logic       BTND,
 	input  logic       BTNL,
 	input  logic       BTNR,
-	output logic [1:0] JA,
+	output logic [1:1] JA,
 	input  logic [1:0] SW,
 	output logic [4:0] LED,
 	output logic [3:0] VGA_R,
