@@ -152,9 +152,10 @@ module game (
 
 	sound sound_inst (
 		.clk(clk),
-		.rst_n(rst_n),
+		.rst_n(!restart),
 		.vsync(tick_vsync),
 		.hsync(o_vga_hsync),
+		.new_input(new_user_input && !failure && !success),
 		.failure(snake_failure && !failure),
 		.success(snake_success && !success),
 		.eat(snake_eat_apple),
