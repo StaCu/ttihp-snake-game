@@ -122,6 +122,8 @@ module game (
 		.o_eat(snake_eat_apple)
 	);
 
+	logic pwm_base;
+
 	vga vga_inst (
 		.clk(clk),
 		.rst_n(rst_n),
@@ -131,6 +133,7 @@ module game (
 		.b(o_vga_b),
 		.vsync(o_vga_vsync),
 		.hsync(o_vga_hsync),
+		.pwm_base(pwm_base),
 
 		.apple_x(apple_x),
 		.apple_y(apple_y),
@@ -154,7 +157,7 @@ module game (
 		.clk(clk),
 		.rst_n(!restart),
 		.vsync(tick_vsync),
-		.hsync(o_vga_hsync),
+		.pwm_base(pwm_base),
 		.new_input(new_user_input && !failure && !success),
 		.failure(snake_failure && !failure),
 		.success(snake_success && !success),
