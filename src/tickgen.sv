@@ -20,8 +20,8 @@ module tickgen (
     logic prev_vsync;
     logic prev_user_input;
 
-    logic [4:0] counter_max;
-    logic [4:0] counter;
+    logic [3:0] counter_max;
+    logic [3:0] counter;
 
     always @(posedge clk) begin
         if (!rst_n) begin
