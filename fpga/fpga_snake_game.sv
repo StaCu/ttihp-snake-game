@@ -13,6 +13,7 @@ module fpga_snake_game (
 	input  logic       BTND,
 	input  logic       BTNL,
 	input  logic       BTNR,
+	output logic [1:1] JA,
 	input  logic [1:0] SW,
 	output logic [4:0] LED,
 	output logic [3:0] VGA_R,
@@ -83,7 +84,8 @@ module fpga_snake_game (
 		.o_failure(LED[0]),
 		.o_success(LED[1]),
 		.o_eat(LED[2]),
-		.o_tick(LED[3])
+		.o_tick(LED[3]),
+		.o_audio(JA[1])
 	);
 
 	// Vivado Design Suite 7 Series FPGA and Zynq 7000 SoC Libraries Guide (UG953)

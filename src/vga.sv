@@ -14,6 +14,7 @@ module vga (
 	output logic [1:0] b,
 	output logic       vsync,
 	output logic       hsync,
+	output logic       pwm_base,
 
 	input  logic [4:0] apple_x,
 	input  logic [3:0] apple_y,
@@ -46,6 +47,7 @@ module vga (
 	assign ty = py[8:5];
 	assign next_tx = next_px[9:5];
 	assign next_ty = next_py[8:5];
+	assign pwm_base = py[3];
 
 	logic [5:0] rgb;
 	assign r = rgb[5:4];

@@ -10,6 +10,7 @@ add_files -norecurse -scan_for_includes       \
     "$base_dir/verilog/vga_sync.sv"           \
     "$base_dir/verilog/game.sv"               \
     "$base_dir/verilog/control.sv"            \
+    "$base_dir/verilog/sound.sv"              \
     "$base_dir/verilog/apple.sv"              \
     "$base_dir/verilog/fpga_snake_game.sv"
 import_files -force -norecurse

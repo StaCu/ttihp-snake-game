@@ -25,7 +25,8 @@ module game (
 	output logic       o_failure,
 	output logic       o_success,
 	output logic       o_eat,
-	output logic       o_tick
+	output logic       o_tick,
+	output logic       o_audio
 );
 
 	logic       tick;
@@ -121,6 +122,8 @@ module game (
 		.o_eat(snake_eat_apple)
 	);
 
+	logic pwm_base;
+
 	vga vga_inst (
 		.clk(clk),
 		.rst_n(rst_n),
@@ -130,6 +133,7 @@ module game (
 		.b(o_vga_b),
 		.vsync(o_vga_vsync),
 		.hsync(o_vga_hsync),
+		.pwm_base(pwm_base),
 
 		.apple_x(apple_x),
 		.apple_y(apple_y),
@@ -147,6 +151,19 @@ module game (
 		.failure(failure),
 		.success(success),
 		.eat(snake_eat_apple)
+	);
+
+	sound sound_inst (
+		.clk(clk),
+		.rst_n(!restart),
+		.vsync(tick_vsync),
+		.pwm_base(pwm_base),
+		.new_input(new_user_input && !failure && !success),
+		.failure(snake_failure && !failure),
+		.success(snake_success && !success),
+		.eat(snake_eat_apple),
+		.tick(tick_done),
+		.audio(o_audio)
 	);
 
 	always @(posedge clk) begin
