@@ -11,7 +11,6 @@ module sound (
     input  logic       vsync,
     input  logic       pwm_base,
     // sound sources (all single cycle events)
-    input  logic       new_input,
     input  logic       failure,
     input  logic       success,
     input  logic       eat,
@@ -41,7 +40,7 @@ module sound (
             end
         end
         next_mode = mode;
-        if ((phase == 4 && mode == 1) || (phase == 1 && mode == 1 && max_counter[0])|| phase == 24) begin
+        if ((phase == 1 && mode == 1) || phase == 24) begin
             next_mode = 0;
         end
         if (failure) begin
@@ -56,10 +55,6 @@ module sound (
             next_max_counter = 3; // 3*16+15=63 | 500 Hz
             next_phase = 0;
             next_mode = 2;
-        end else if (new_input && mode == 0) begin
-            next_max_counter = 4; // 4*16+15=79 | 398 Hz
-            next_phase = 0;
-            next_mode = 1;
         end else if (tick && mode == 0) begin
             next_max_counter = 5; // 5*16+15=95 | 331 Hz
             next_phase = 0;

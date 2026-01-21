@@ -78,7 +78,7 @@ module game (
 	logic       pos_last;
 	logic       pos_valid;
 	logic	    snake_failure;
-	logic	    snake_success;
+	logic       snake_success;
 	logic	    snake_eat_apple;
 	logic [4:0] apple_x;
 	logic [3:0] apple_y;
@@ -158,7 +158,6 @@ module game (
 		.rst_n(!restart),
 		.vsync(tick_vsync),
 		.pwm_base(pwm_base),
-		.new_input(new_user_input && !failure && !success),
 		.failure(snake_failure && !failure),
 		.success(snake_success && !success),
 		.eat(snake_eat_apple),
