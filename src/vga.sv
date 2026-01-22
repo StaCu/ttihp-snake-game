@@ -107,11 +107,11 @@ module vga (
 		if (!visible) begin
 			color = 0;
 		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
-			case ({ success, failure })
-				2'b10: color = 1;
-				2'b01: color = 2;
-				default: color = 3;
-			endcase
+			if (failure) begin
+				color = 2;
+			end else begin
+				color = 3;
+			end
 		end else casez ({sx, sy, row_buffer[0], |row_buffer[0], tx == apple_x && ty == apple_y && apple_valid})
 			10'b0110_???1_?_?: color = 1; // top-center
 			10'b0100_??1?_?_?: color = 1; // bottom-center
