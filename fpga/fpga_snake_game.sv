@@ -13,7 +13,8 @@ module fpga_snake_game (
 	input  logic       BTND,
 	input  logic       BTNL,
 	input  logic       BTNR,
-	input  logic [1:0] SW,
+	output logic [1:1] JA,
+	input  logic [2:0] SW,
 	output logic [4:0] LED,
 	output logic [3:0] VGA_R,
 	output logic [3:0] VGA_G,
@@ -58,6 +59,75 @@ module fpga_snake_game (
 		end
 	end
 
+	logic rst_n;
+	logic pause;
+	logic restart;
+	logic failure;
+	logic success;
+	logic eat;
+	logic tick;
+	logic prev_tick;
+	logic up;
+	logic down;
+	logic left;
+	logic right;
+	logic [4:0] sx;
+	logic [3:0] sy;
+	logic autopilot;
+
+	assign rst_n = CPU_RESETN && LOCKED && power_on_reset[8];
+	assign pause = SW[0];
+	assign restart = SW[1];
+	assign autopilot = SW[2];
+
+	assign LED[0] = failure;
+	assign LED[1] = success;
+	assign LED[2] = eat;
+	assign LED[3] = tick;
+
+	always @(*) begin
+		if (autopilot) begin
+			up = 0;
+			down = 0;
+			left = 0;
+			right = 0;
+			if (sy == 13 && sx != 18) begin
+				right = 1;
+			end else if (sx[0] == 0 && sy == 1) begin
+				left = 1;
+			end else if (sx[0] == 0) begin
+				up = 1;
+			end else if (sy == 12 && sx != 1) begin
+				left = 1;
+			end else begin
+				down = 1;
+			end
+		end else begin
+			up = BTNU;
+			down = BTND;
+			left = BTNL;
+			right = BTNR;
+		end
+	end
+
+	always @(posedge CLKOUT0) begin
+		if (!rst_n || restart) begin
+			sx <= START_POS_X;
+			sy <= START_POS_Y;
+		end else if (tick && !prev_tick) begin
+			if (up) begin
+				sy <= sy - 1;
+			end else if (down) begin
+				sy <= sy + 1;
+			end else if (left) begin
+				sx <= sx - 1;
+			end else if (right) begin
+				sx <= sx + 1;
+			end
+		end
+		prev_tick <= tick;
+	end
+
 	logic vsync;
 	logic hsync;
 	assign VGA_VS = !vsync;
@@ -65,14 +135,14 @@ module fpga_snake_game (
 
 	game game_inst (
 		.clk(CLKOUT0),
-		.rst_n(CPU_RESETN && LOCKED && power_on_reset[8]),
+		.rst_n(rst_n),
 
-		.i_up(BTNU),
-		.i_down(BTND),
-		.i_left(BTNL),
-		.i_right(BTNR),
-		.i_pause(SW[0]),
-		.i_restart(SW[1]),
+		.i_up(up),
+		.i_down(down),
+		.i_left(left),
+		.i_right(right),
+		.i_pause(pause),
+		.i_restart(restart),
 
 		.o_vga_r(VGA_R[3:2]),
 		.o_vga_g(VGA_G[3:2]),
@@ -80,10 +150,11 @@ module fpga_snake_game (
 		.o_vga_vsync(vsync),
 		.o_vga_hsync(hsync),
 
-		.o_failure(LED[0]),
-		.o_success(LED[1]),
-		.o_eat(LED[2]),
-		.o_tick(LED[3])
+		.o_failure(failure),
+		.o_success(success),
+		.o_eat(eat),
+		.o_tick(tick),
+		.o_audio(JA[1])
 	);
 
 	// Vivado Design Suite 7 Series FPGA and Zynq 7000 SoC Libraries Guide (UG953)
