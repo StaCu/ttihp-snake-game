@@ -17,7 +17,6 @@ module tickgen (
     output logic       o_tick
 );
 
-    logic prev_vsync;
     logic prev_user_input;
 
     logic [3:0] counter_max;
@@ -25,13 +24,13 @@ module tickgen (
 
     always @(posedge clk) begin
         if (!rst_n) begin
-            counter_max <= DEFAULT_TICK_COUNTER_MAX;
+            counter_max <= { DEFAULT_TICK_COUNTER_MAX, 1'b0 };
         end else begin
             if (i_restart && !prev_user_input) begin
                 if (i_up) begin
-                    counter_max <= counter_max + 1;
+                    counter_max <= counter_max + 2;
                 end else if (i_down) begin
-                    counter_max <= counter_max - 1;
+                    counter_max <= counter_max - 2;
                 end
             end
         end
@@ -40,7 +39,7 @@ module tickgen (
             counter <= 0;
             o_tick <= 0;
         end else begin
-            if (i_vsync && !prev_vsync) begin
+            if (i_vsync) begin
                 counter <= counter == counter_max ? 0 : counter + 1;
                 if (counter == counter_max) begin
                     o_tick <= 1;
@@ -52,7 +51,6 @@ module tickgen (
             end
         end
 
-        prev_vsync <= i_vsync;
         prev_user_input <= i_up | i_down;
     end
 

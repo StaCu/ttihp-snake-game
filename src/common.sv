@@ -24,9 +24,6 @@ parameter logic [3:0] START_POS_Y = 7;
 
 // Tick rate
 // The tick counter counts once per frame, i.e. 60 times per second
-parameter logic [3:0] DEFAULT_TICK_COUNTER_MAX = 14; // 14+1 ==  4 ticks per second
-//parameter logic [3:0] DEFAULT_TICK_COUNTER_MAX = 11; // 11+1 ==  5 ticks per second
-//parameter logic [3:0] DEFAULT_TICK_COUNTER_MAX =  9; //  9+1 ==  6 ticks per second
-//parameter logic [3:0] DEFAULT_TICK_COUNTER_MAX =  5; //  5+1 == 10 ticks per second
+parameter logic [2:0] DEFAULT_TICK_COUNTER_MAX = 7; // 7*2+1 == 15 => 60Hz / 15 == 4 ticks per second
 
 `endif

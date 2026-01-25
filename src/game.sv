@@ -30,7 +30,7 @@ module game (
 
 	logic       tick;
 	logic       tick_done;
-	logic       tick_vsync;
+	logic       tick_vsync_pulse;
 	logic       start;
 	logic	    failure;
 	logic	    success;
@@ -46,7 +46,7 @@ module game (
 		.i_up(i_up),
 		.i_down(i_down),
 		.i_restart(restart),
-		.i_vsync(tick_vsync && !i_pause && !failure && !success && start),
+		.i_vsync(tick_vsync_pulse && !i_pause && !failure && !success && start),
 		.i_tick_done(tick_done),
 		.o_tick(tick)
 	);
@@ -120,6 +120,8 @@ module game (
 		.o_eat(snake_eat_apple)
 	);
 
+	logic vga_vsync_pulse;
+
 	vga vga_inst (
 		.clk(clk),
 		.rst_n(rst_n),
@@ -128,6 +130,7 @@ module game (
 		.g(o_vga_g),
 		.b(o_vga_b),
 		.vsync(o_vga_vsync),
+		.vsync_pulse(vga_vsync_pulse),
 		.hsync(o_vga_hsync),
 
 		.apple_x(apple_x),
@@ -164,17 +167,17 @@ module game (
 	always @(posedge clk) begin
 		if (!rst_n) begin
 			rtl_simulation_tick_vsync_counter <= 0;
-			tick_vsync <= 0;
+			tick_vsync_pulse <= 0;
 		end else if (rtl_simulation_tick_vsync_counter == 20) begin
 			rtl_simulation_tick_vsync_counter <= 0;
-			tick_vsync <= 1;
+			tick_vsync_pulse <= 1;
 		end else begin
 			rtl_simulation_tick_vsync_counter <= rtl_simulation_tick_vsync_counter + 1;
-			tick_vsync <= 0;
+			tick_vsync_pulse <= 0;
 		end
 	end
 `else
-	assign tick_vsync = o_vga_vsync;
+	assign tick_vsync_pulse = vga_vsync_pulse;
 `endif
 
 endmodule

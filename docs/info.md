@@ -52,8 +52,8 @@ restart  | ui_in[5] | yes (if 0)
 The game starts once the button of a valid input direction has been pressed.
 
 The game speed can be changed by pressing up/down while asserting restart.
-It is linked to the VGA display refresh rate with a controllable factor (1-16), which slows down the game speed accordingly.
-Default is 15, which results in 4 updates per second.
+It is linked to the VGA display refresh rate with a controllable factor (0-7), which slows down the game speed accordingly.
+Default is 7, which results in 4 updates per second.
 
 Additionally, the game exposes four signals about the game state that could be used to e.g. add external sound effects.
 
