@@ -13,6 +13,7 @@ module vga (
 	output logic [1:0] g,
 	output logic [1:0] b,
 	output logic       vsync,
+	output logic       vsync_pulse,
 	output logic       hsync,
 	output logic       pwm_base,
 
@@ -102,39 +103,42 @@ module vga (
 		hsync <= s_hsync;
 	end
 
+	always @(*) begin
+		vsync_pulse = s_vsync && !vsync;
+	end
+
 	always @(posedge clk) begin
-		color = 0;
 		if (!visible) begin
-			color = 0;
+			color <= 0;
 		end else if (tx == 0 || tx == GAME_WIDTH+1 || ty == 0 || ty == GAME_HEIGHT+1) begin
 			if (failure) begin
-				color = 2;
+				color <= 2;
 			end else begin
-				color = 3;
+				color <= 3;
 			end
 		end else casez ({sx, sy, row_buffer[0], |row_buffer[0], tx == apple_x && ty == apple_y && apple_valid})
-			10'b0110_???1_?_?: color = 1; // top-center
-			10'b0100_??1?_?_?: color = 1; // bottom-center
-			10'b1001_?1??_?_?: color = 1; // left-center
-			10'b0001_1???_?_?: color = 1; // right-center
-			10'b0101_????_1_?: color = 1; // snake-center
-			10'b0101_????_0_1: color = 2; // apple-center
-			default: color = 0; // no snake or corner
+			10'b0110_???1_?_?: color <= 1; // top-center
+			10'b0100_??1?_?_?: color <= 1; // bottom-center
+			10'b1001_?1??_?_?: color <= 1; // left-center
+			10'b0001_1???_?_?: color <= 1; // right-center
+			10'b0101_????_1_?: color <= 1; // snake-center
+			10'b0101_????_0_1: color <= 2; // apple-center
+			default: color <= 0; // no snake or corner
 		endcase
 	end
 
 	always @(posedge clk) begin
 		prev_dir <= { snake_dir[1], ~snake_dir[0] };
-		case (px[4:0])
-			3: sx <= 1;
-			27: sx <= 2;
-			31: sx <= 0;
-		endcase
-		case (py[4:0])
-			0: sy <= 0;
-			4: sy <= 1;
-			28: sy <= 2;
-		endcase
+	end
+	
+	always @(*) begin
+		if (px[4:0] <= 3) sx = 0;
+		else if (px[4:0] <= 27) sx = 1;
+		else sx = 2;
+	
+		if (py[4:0] <= 3) sy = 0;
+		else if (py[4:0] <= 27) sy = 1;
+		else sy = 2;
 	end
 
 	logic [4:0] row_buffer_widx;

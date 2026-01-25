@@ -8,7 +8,7 @@
 module sound (
     input  logic       clk,
     input  logic       rst_n,
-    input  logic       vsync,
+    input  logic       vsync_pulse,
     input  logic       pwm_base,
     // sound sources (all single cycle events)
     input  logic       failure,
@@ -33,7 +33,7 @@ module sound (
     always @(*) begin
         next_max_counter = max_counter;
         next_phase = phase;
-        if (vsync && !prev_vsync) begin
+        if (vsync_pulse && !prev_vsync) begin
             next_phase = phase + 1;
             if (mode == 2) begin
                 next_max_counter = phase < 12 ? max_counter + 1 : max_counter - 1;
@@ -65,7 +65,7 @@ module sound (
     logic next_audio;
 
     always @(*) begin
-        next_audio <= !audio && mode != 0 && !(mode == 3 && phase[2]);
+        next_audio = !audio && mode != 0 && !(mode == 3 && phase[2]);
     end
 
     always @(posedge clk) begin
@@ -87,7 +87,7 @@ module sound (
             max_counter <= next_max_counter;
         end
         prev_pwm_base <= pwm_base;
-        prev_vsync <= vsync;
+        prev_vsync <= vsync_pulse;
     end
 
 endmodule
