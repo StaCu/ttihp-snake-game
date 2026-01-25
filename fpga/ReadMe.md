@@ -20,7 +20,6 @@ Switch 0 pauses the game.
 Switch 1 restarts the game.
 Switch 2 enables the autopilot (only works after restart).
 While restart is asserted, pressing up and down will change the tickrate (a factor of 1-32 on top of the VGA display rate of 60Hz).
-While restart is asserted, pressing right will enable colorblind mode, replacing the green snake with a blue one.
 
 ## Porting to other Platforms
 

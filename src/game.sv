@@ -77,7 +77,6 @@ module game (
 	logic       pos_last;
 	logic       pos_valid;
 	logic	    snake_failure;
-	logic	    snake_success;
 	logic	    snake_eat_apple;
 	logic [4:0] apple_x;
 	logic [3:0] apple_y;
@@ -101,7 +100,7 @@ module game (
 		.o_pos_last(pos_last),
 		.o_pos_valid(pos_valid),
 		.o_failure(snake_failure),
-		.o_success(snake_success),
+		.o_success(success),
 		.i_eat(snake_eat_apple)
 	);
 
@@ -152,10 +151,8 @@ module game (
 	always @(posedge clk) begin
 		if (restart) begin
 			failure <= 0;
-			success <= 0;
 		end else begin
 			failure <= failure | snake_failure;
-			success <= success | snake_success;
 		end
 	end
 
