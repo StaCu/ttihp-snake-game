@@ -18,21 +18,27 @@ from openlane.flows.misc import OpenInKLayout
 from openlane.flows.classic import Classic
 from openlane.steps.odb import OdbpyStep
 from openlane.steps import OpenROAD
-from librelane.steps import Step
-from librelane.state import DesignFormat
-from librelane.common import TclStepMixin
 import volare
 
-class ShiftRegStep(TclStepMixin, Step):
-    id = "ShiftRegStep"
-    name = "Run custom Tcl script"
+class CustomPower(OdbpyStep):
 
-    # Declare what design formats this step consumes and produces
-    inputs = [DesignFormat.ODB]
-    outputs = [DesignFormat.ODB]
+	id = "TT.Top.CustomPower"
+	name = "Custom Power connections for DFFRAM macro"
 
-    def get_tcl_script_path(self):
-        return "src/shiftreg.tcl"
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_power.py"
+		)
+
+	def get_command(self) -> List[str]:
+		macro = self.config["MACROS"]['RAM32']
+		instance = macro.instances['ram1']
+		return super().get_command() + [
+			"--macro-x-pos",
+			instance.location[0],
+		]
+
 
 class ProjectFlow(Classic):
   pass

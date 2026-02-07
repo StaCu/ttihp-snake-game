@@ -6,6 +6,10 @@
 `include "common.sv"
 
 module game (
+`ifdef USE_POWER_PINS
+    input             VPWR,
+    input             VGND,
+`endif
 	input  logic       clk,
 	input  logic       rst_n,
 
@@ -86,6 +90,10 @@ module game (
 	assign o_eat = !apple_ready && start;
 
 	snake snake_inst (
+`ifdef USE_POWER_PINS
+		.VPWR(VPWR),
+		.VGND(VGND),
+`endif
 		.clk(clk),
 		.rst_n(!restart),
 		.i_tick(tick && apple_ready),

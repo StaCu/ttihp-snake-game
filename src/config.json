@@ -33,6 +33,36 @@
 
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
 
+  "MACROS": {
+    "shiftreg": {
+      "instances": {
+        "game_inst.snake_inst.shiftreg_inst": {
+          "location": [10, 10],
+          "orientation": "N"
+        }
+      },
+      "gds": ["dir::macros/gds/shiftreg.gds"],
+      "lef": ["dir::macros/lef/shiftreg.lef"],
+      "nl": ["dir::macros/nl/shiftreg.nl.v"],
+      "spef": {
+        "min_*": ["dir::macros/spef/min/shiftreg.min.spef"],
+        "nom_*": ["dir::macros/spef/nom/shiftreg.nom.spef"],
+        "max_*": ["dir::macros/spef/max/shiftreg.max.spef"]
+      },
+      "lib": {
+        "min_tt_025C_1v80": "dir::macros/lib/min_tt_025C_1v80/shiftreg__min_tt_025C_1v80.lib",
+        "min_ff_n40C_1v95": "dir::macros/lib/min_ff_n40C_1v95/shiftreg__min_ff_n40C_1v95.lib",
+        "max_ff_n40C_1v95": "dir::macros/lib/max_ff_n40C_1v95/shiftreg__max_ff_n40C_1v95.lib",
+        "nom_tt_025C_1v80": "dir::macros/lib/nom_tt_025C_1v80/shiftreg__nom_tt_025C_1v80.lib",
+        "min_ss_100C_1v60": "dir::macros/lib/min_ss_100C_1v60/shiftreg__min_ss_100C_1v60.lib",
+        "max_ss_100C_1v60": "dir::macros/lib/max_ss_100C_1v60/shiftreg__max_ss_100C_1v60.lib",
+        "max_tt_025C_1v80": "dir::macros/lib/max_tt_025C_1v80/shiftreg__max_tt_025C_1v80.lib",
+        "nom_ss_100C_1v60": "dir::macros/lib/nom_ss_100C_1v60/shiftreg__nom_ss_100C_1v60.lib",
+        "nom_ff_n40C_1v95": "dir::macros/lib/nom_ff_n40C_1v95/shiftreg__nom_ff_n40C_1v95.lib"
+      }
+    }
+  },
+
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
