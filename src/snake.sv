@@ -6,10 +6,6 @@
 `include "common.sv"
 
 module snake (
-`ifdef USE_POWER_PINS
-    input             VPWR,
-    input             VGND,
-`endif
 	input  logic       clk,
 	input  logic       rst_n,
 
@@ -40,13 +36,9 @@ module snake (
 	// The snake is stored in a shift register.
 	// Every element holds the information of which direction to go next (head to tail).
 	shiftreg #(
-	//	.WIDTH(2),
-	//	.DEPTH(MAX_LENGTH)
+		.WIDTH(2),
+		.DEPTH(MAX_LENGTH)
 	) shiftreg_inst (
-`ifdef USE_POWER_PINS
-		.VPWR(VPWR),
-		.VGND(VGND),
-`endif
 		.clk(clk),
 		.out(dir_out),
 		.in(dir_in),

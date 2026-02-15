@@ -7,10 +7,6 @@
 `include "common.sv"
 
 module tt_um_snake_game (
-`ifdef USE_POWER_PINS
-    input             VPWR,
-    input             VGND,
-`endif
 	input  logic [7:0] ui_in,    // Dedicated inputs
 	output logic [7:0] uo_out,   // Dedicated outputs
 	input  logic [7:0] uio_in,   // IOs: Input path
@@ -53,10 +49,6 @@ module tt_um_snake_game (
 	assign uio_oe  = 8'b10001111;
 
 	game game_inst (
-`ifdef USE_POWER_PINS
-		.VPWR(VPWR),
-		.VGND(VGND),
-`endif
 		.clk(clk),
 		.rst_n(rst_n),
 
