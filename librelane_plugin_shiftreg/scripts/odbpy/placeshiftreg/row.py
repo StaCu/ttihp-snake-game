@@ -55,6 +55,7 @@ class Row(object):
                     "tap_%i_%i" % (self.ordinal, self.tap_counter), self.tap_width
                 ),
                 ignore_tap=True,
+                fixed=True,
             )
             self.tap_counter += 1
 
@@ -70,7 +71,8 @@ class Row(object):
         ignore_tap: bool = False,
         fixed: bool = False,
     ):
-        width = instance.getMaster().getWidth()
+        width = instance.getMaster().getWidth() if instance else 5060
+        name = instance.getMaster().getName() if instance else ""
         if not ignore_tap:
             self.tap(width)
 
@@ -80,11 +82,12 @@ class Row(object):
             if tx < self.x + width and self.x < tx + tw:
                 self.x = tx + tw
 
-        instance.setOrient(self.orientation)
-        instance.setLocation(self.x, self.y)
-        instance.setPlacementStatus("PLACED" if not fixed else "LOCKED")
+        if instance:
+            instance.setOrient(self.orientation)
+            instance.setLocation(self.x if self.ordinal % 2 == 0 else (158240 + 2760 - (self.x + width)), self.y)
+            instance.setPlacementStatus("PLACED" if not fixed else "LOCKED")
 
-        if re.match(Row.tap_rx, instance.getMaster().getName()):
+        if re.match(Row.tap_rx, name):
             self.since_last_tap = 0
         else:
             self.since_last_tap += width

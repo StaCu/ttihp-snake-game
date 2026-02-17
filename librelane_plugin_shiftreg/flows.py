@@ -9,5 +9,5 @@ class ShiftregFlow(classic.Classic):
     name = "ShiftregFlow"
 
     Substitutions = {
-        "-OpenROAD.GlobalPlacement": Shiftreg.PlaceShiftreg,
+        "-OpenROAD.TapEndcapInsertion": Shiftreg.PlaceShiftreg,
     }
