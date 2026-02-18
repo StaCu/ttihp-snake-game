@@ -1,13 +1,19 @@
 import re
 from .row import Row
-from .placeable import Placeable
 
 from odb import dbInst as Instance
 
 from typing import Callable, List, Dict, Union
 
 
-class Shiftreg(Placeable):
+def dbInst__repr__(self):
+    return f"<dbInst {self.getMaster().getName()} {self.getName()}>"
+
+
+Instance.__repr__ = dbInst__repr__
+
+
+class Shiftreg(object):
     def __init__(self, instances: List[Instance], width: int, depth: int):
         self.clkbuf = None
 

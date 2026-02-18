@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 # SPDX-License-Identifier: Apache-2.0
 # Copyright ©2020-2022, The American University in Cairo
+# Modified 2026, David Volz
 from odb import dbRow, dbInst, dbSite
 from typing import List, Callable
 
