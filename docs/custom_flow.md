@@ -60,3 +60,9 @@ TritonCTS actually manages to find and fill the holes (mostly and good enough).
 **Note:**
 The current placement is sub-optimal: the first register is palced in the bottom left corner of the chip, causing a very long wire to connect to it.
 Sometimes this leads to antenna violations, but I got RNG-lucky here - maybe I'll write a better placement algorithm later.
+
+### Result
+
+The resulting placement (routing, filler, and decaps hidden) has the shift register in the bottom half and the remaining logic in the upper half.
+
+![GDS of custom placed shift register](custom_flow.png)
