@@ -85,7 +85,8 @@ class Row(object):
 
         if instance:
             instance.setOrient(self.orientation)
-            instance.setLocation(self.x, self.y)# if self.ordinal % 2 == 0 else (158240 + 2760 - (self.x + width)), self.y)
+            #instance.setLocation(self.x, self.y)# if self.ordinal % 2 == 0 else (158240 + 2760 - (self.x + width)), self.y)
+            instance.setLocation(self.x if self.ordinal % 2 == 0 else (202080 - (self.x + width)), self.y)
             instance.setPlacementStatus("PLACED" if not fixed else "LOCKED")
 
         if re.match(Row.tap_rx, name):

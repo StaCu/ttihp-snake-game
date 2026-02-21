@@ -146,9 +146,9 @@ class Shiftreg(object):
                 # place tiehi
                 if self.tiehi[w][d]:
                     hi_width  = self.tiehi[w][d].getMaster().getWidth()
-                    if r > 0 and rows[r-1].width + hi_width >= row_max: 
-                        rows[r-1].place(self.tiehi[w][d], fixed=True)
-                    elif rows[r].width + hi_width >= row_max: 
+                    #if r > 0 and rows[r-1].width + hi_width * 2 < row_max:
+                    #    rows[r-1].place(self.tiehi[w][d], fixed=True)
+                    if rows[r].width + hi_width >= row_max:
                         r += 1
                         rows[r].place(self.tiehi[w][d], fixed=True)
                     else:
@@ -172,13 +172,18 @@ class Shiftreg(object):
                 # place delay
                 if d != self.depth-1:
                     dly_width2  = self.dly[w][d].getMaster().getWidth()
-                    if rows[r].width + dly_width >= row_max: 
+                    if rows[r].width + dly_width >= row_max:
                         r += 1
-                    rows[r].place(self.dly[w][d], fixed=True)
+
+                    if r % 2 == 0:
+                        rows[r].place(self.dly[w][d], fixed=True)
                     # placeholders
                     for i in range((dly_width - dly_width2) // min_width):
                         inst = odb.dbInst.create(block, dly_master, f'sreg_fill_to_be_removed_{w}_{d}_{i}')
                         rows[r].place(inst, fixed=True)
+
+                    if r % 2 == 1:
+                        rows[r].place(self.dly[w][d], fixed=True)
 
                 # place clock buffer
                 clock_buffer += 1
