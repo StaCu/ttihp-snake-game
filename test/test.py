@@ -26,12 +26,13 @@ async def test(dut):
     # Change tickrate to once per frame
     dut._log.info("Change tickrate")
     dut.ui_in.value = 0b100000
-    for _ in range(14):
+    for _ in range(7):
         dut.ui_in.value = 0b100010
         await ClockCycles(dut.clk, 2)
         dut.ui_in.value = 0b100000
         await ClockCycles(dut.clk, 2)
-    await ClockCycles(dut.clk, 250)
+    # wait 250 + 7*4 cycles to ensure the apple appears at 11, 4
+    await ClockCycles(dut.clk, 250 + 7*4)
     dut.ui_in.value = 0b000000
 
     # wait for hsync
