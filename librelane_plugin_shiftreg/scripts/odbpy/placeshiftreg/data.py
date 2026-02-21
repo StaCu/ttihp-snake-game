@@ -20,7 +20,8 @@ class Shiftreg(object):
         self.db = db
         self.clkbuf = None
 
-        self.clk_ratio = 13
+        self.clk_ratio = 8
+        self.tiehi_ratio = 4
         self.width = width
         self.depth = depth
         self.bits = [[None] * depth for _ in range(width)]
@@ -42,13 +43,22 @@ class Shiftreg(object):
                 self.dly[w][d] = instance
 
         self.tiehi = [[None] * depth for _ in range(width)]
-        regex = re.compile(r'.*genblk1\\\[(\d+)\\\].genblk1\\\[(\d+)\\\].sreg_high')
+        regex = re.compile(r'.*genblk1\\\[(\d+)\\\].genblk3\\\[(\d+)\\\].sreg_high')
         for instance in instances:
             m = regex.match(instance.getName())
             if m:
                 w = int(m.group(1))
                 d = int(m.group(2))
                 self.tiehi[w][d] = instance
+
+        self.tiehibuf = [[None] * depth for _ in range(width)]
+        regex = re.compile(r'.*genblk1\\\[(\d+)\\\].genblk3\\\[(\d+)\\\].sreg_bufhigh')
+        for instance in instances:
+            m = regex.match(instance.getName())
+            if m:
+                w = int(m.group(1))
+                d = int(m.group(2))
+                self.tiehibuf[w][d] = instance
 
         self.fills = []
         regex = re.compile(r'.*.sreg_fill_to_be_removed.*')
@@ -86,46 +96,6 @@ class Shiftreg(object):
         dly_master = lib.findMaster('sg13g2_dlygate4sd3_1')
         dly_master = lib.findMaster('sg13g2_fill_1')
 
-        print('create')
-        #for w in range(self.width):
-        #    for d in range(self.depth-1):
-        #        prev = self.bits[w][d]
-        #        next = self.bits[w][d+1]
-        #        inst = odb.dbInst.create(block, dly_master, f'dly_{w}_{d}')
-        #        self.dly[w][d] = inst
-        #        continue
-#
-        #        q = prev.findITerm('Q')
-        #        d = next.findITerm('D')
-        #        a = inst.findITerm('A')
-        #        x = inst.findITerm('X')
-        #        q.disconnect()
-        #        net0 = odb.dbNet.create(block, f'net0_{w}_{d}')
-        #        net1 = odb.dbNet.create(block, f'net1_{w}_{d}')
-        #        q.connect(net0)
-        #        a.connect(net0)
-        #        d.connect(net1)
-        #        x.connect(net1)
-        #inst.setLocation(*inst.getLocation())
-        #inst.setOrient(inst.getOrient())
-        #inst.setPlacementStatus(inst.getPlacementStatus())
-
-        print('nets')
-        #for iterm in inst.getITerms():
-        #    print(iterm.getName())
-        #    print(iterm.getMTerm().getName())
-        #    net = iterm.getNet()
-        #    if net:
-        #        print(net.getName())
-        #        # Match by pin name
-        #        new_iterm = new_inst.findITerm(iterm.getMTerm().getName())
-        #        if new_iterm:
-        #            new_iterm.connect(net)
-
-
-        # 4320
-
-
         min_width = 480
         hi_width  = self.tiehi[0][0].getMaster().getWidth() # 
         ff_width  = self.bits[0][0].getMaster().getWidth() # 7360
@@ -142,17 +112,28 @@ class Shiftreg(object):
             clk_buf_idx = 0
             tie_high_idx = 0
             for d in range(self.depth):
-                print(r)
                 # place tiehi
-                if self.tiehi[w][d]:
-                    hi_width  = self.tiehi[w][d].getMaster().getWidth()
-                    #if r > 0 and rows[r-1].width + hi_width * 2 < row_max:
-                    #    rows[r-1].place(self.tiehi[w][d], fixed=True)
-                    if rows[r].width + hi_width >= row_max:
-                        r += 1
-                        rows[r].place(self.tiehi[w][d], fixed=True)
-                    else:
-                        rows[r].place(self.tiehi[w][d], fixed=True)
+                tie_high_idx += 1
+                if tie_high_idx == self.tiehi_ratio:
+                    tie_high_idx = 0
+                if tie_high_idx == self.tiehi_ratio//2:
+                    d2 = d // self.tiehi_ratio
+                    if self.tiehi[w][d2]:
+                        hi_width  = self.tiehi[w][d2].getMaster().getWidth()
+                        #if r > 0 and rows[r-1].width + hi_width * 2 < row_max:
+                        #    rows[r-1].place(self.tiehi[w][d], fixed=True)
+                        if rows[r].width + hi_width >= row_max:
+                            r += 1
+                            rows[r].place(self.tiehi[w][d2], fixed=True)
+                        else:
+                            rows[r].place(self.tiehi[w][d2], fixed=True)
+
+                        hi_width_buf  = self.tiehibuf[w][d2].getMaster().getWidth()
+                        #if r > 0 and rows[r-1].width + hi_width * 2 < row_max:
+                        #    rows[r-1].place(self.tiehi[w][d], fixed=True)
+                        if rows[r].width + hi_width_buf >= row_max:
+                            r += 1
+                        rows[r].place(self.tiehibuf[w][d2], fixed=True)
             
                 # place flipflop
                 ff_width  = self.bits[w][d].getMaster().getWidth()
@@ -172,6 +153,11 @@ class Shiftreg(object):
                 # place delay
                 if d != self.depth-1:
                     dly_width2  = self.dly[w][d].getMaster().getWidth()
+#
+#                    old_r = r
+#                    if r > 0 and rows[r-1].width + dly_width < row_max:
+#                        r -= 1
+
                     if rows[r].width + dly_width >= row_max:
                         r += 1
 
@@ -184,6 +170,8 @@ class Shiftreg(object):
 
                     if r % 2 == 1:
                         rows[r].place(self.dly[w][d], fixed=True)
+
+                  #  r = old_r
 
                 # place clock buffer
                 clock_buffer += 1
@@ -201,12 +189,6 @@ class Shiftreg(object):
                     #rows[r].x += clkbuf_width
                     #rows[r].since_last_tap += clkbuf_width
                     clk_buf_idx += 1
-
-
-                # 158240: end
-                # 2760: start
-                # 1380: endcap size
-                # 480: tapcell size
 
         return r + 1
     
@@ -229,65 +211,11 @@ class Shiftreg(object):
                 d = next.findITerm('D')
                 a = inst.findITerm('A')
                 x = inst.findITerm('X')
-                #q.disconnect()
-                #d.disconnect()
-                net0 = q.getNet()#odb.dbNet.create(block, f'net0_{w}_{d}')
-                net1 = d.getNet()#odb.dbNet.create(block, f'net1_{w}_{d}')
-                #q.connect(net0)
+                net0 = q.getNet()
+                net1 = d.getNet()
                 a.connect(net0)
-                #d.connect(net1)
                 x.connect(net1)
                 inst.setOrient(dly.getOrient())
                 inst.setLocation(*dly.getLocation())
                 inst.setPlacementStatus(dly.getPlacementStatus())
                 odb.dbInst.destroy(dly)
-
-
-    def replace_all(self):
-        print('replace')
-        return
-        for a in self.dly:
-            for b in a:
-                self.replace(b)
-
-
-    def replace(self, inst):
-        name = inst.getName()
-        print(f'replace {name}')
-
-        # Get the database and library
-        db = self.db
-        chip = db.getChip()
-        block = chip.getBlock()
-
-        lib = None
-        for lib in db.getLibs():
-            master_cell = lib.findMaster('sg13g2_dlygate4sd3_1')
-            if master_cell:
-                break
-        if not master_cell:
-            print('didnt find cell')
-
-        # Create new instance
-        new_inst = odb.dbInst.create(block, master_cell, name + "_new")
-
-        # Copy placement
-        new_inst.setLocation(*inst.getLocation())
-        new_inst.setOrient(inst.getOrient())
-        new_inst.setPlacementStatus(inst.getPlacementStatus())
-
-        # Reconnect nets
-        for iterm in inst.getITerms():
-            net = iterm.getNet()
-            if net:
-                # Match by pin name
-                new_iterm = new_inst.findITerm(iterm.getMTerm().getName())
-                if new_iterm:
-                    new_iterm.connect(net)
-
-        # Delete old instance
-        odb.dbInst.destroy(inst)
-
-        # Rename new instance
-        new_inst.rename(name)
-        print(f'replaced')

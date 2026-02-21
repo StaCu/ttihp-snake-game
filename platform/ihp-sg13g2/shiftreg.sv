@@ -21,32 +21,24 @@ generate
     for (i = 0; i < WIDTH; i = i + 1) begin
         wire sreg_w[DEPTH-1:0];
         wire sreg_q[DEPTH-1:0];
-        //wire high[DEPTH/2-1:0];
-        //wire clk_leaf[DEPTH/25-1:0];
+        wire high[DEPTH/4:0];
 
         assign sreg_w[0] = in[i];
         assign out[i] = sreg_q[DEPTH-1];
         assign first[i] = sreg_q[1];
 
         for (j = 0; j < DEPTH; j = j + 1) begin
-            wire high;
-            sg13g2_tiehi sreg_high (
-                .L_HI(high)
-            );
-
             if (j == 1) begin
                 sg13g2_dfrbpq_2 sreg_dff (
-                    .CLK(clk),//_leaf[j/25]),
-                   // .RESET_B(high[j/2]),
-                    .RESET_B(high),
+                    .CLK(clk),
+                    .RESET_B(high[j/4]),
                     .D(sreg_w[j]),
                     .Q(sreg_q[j])
                 );
             end else begin
                 sg13g2_dfrbpq_1 sreg_dff (
-                    .CLK(clk),//_leaf[j/25]),
-                    //.RESET_B(high[j/2]),
-                    .RESET_B(high),
+                    .CLK(clk),
+                    .RESET_B(high[j/4]),
                     .D(sreg_w[j]),
                     .Q(sreg_q[j])
                 );
@@ -54,31 +46,22 @@ generate
         end
 
         for (j = 0; j < DEPTH-1; j = j + 1) begin
-            //assign sreg_w[j+1] = sreg_q[j];
             sg13g2_buf_1 sreg_dly(
                 .A(sreg_q[j]),
                 .X(sreg_w[j+1])
             );
-            //(* dont_touch = "true" *) sg13g2_dlygate4sd3_1 sreg_dly (
-            //    .A(sreg_q[j]),
-            //    .X(sreg_w[j+1])
-            //);
-           /* wire mid;
-            sg13g2_buf_1 sreg_dly(
-                .A(sreg_q[j]),
-                .X(mid)
-            );
-            sg13g2_buf_1 sreg_dly2(
-                .A(mid),
-                .X(sreg_w[j+1])
-            );*/
         end
 
-        /*for (j = 0; j < DEPTH / 2; j = j + 1) begin
+        for (j = 0; j < DEPTH / 4 + 1; j = j + 1) begin
+            wire tmp_high;
             sg13g2_tiehi sreg_high (
-                .L_HI(high[j])
+                .L_HI(tmp_high)
             );
-        end*/
+            sg13g2_buf_1 sreg_bufhigh(
+                .A(tmp_high),
+                .X(high[j])
+            );
+        end
 
         /*for (j = 0; j < DEPTH / 25; j = j + 1) begin
             sg13g2_buf_8 sreg_clkbuf (
