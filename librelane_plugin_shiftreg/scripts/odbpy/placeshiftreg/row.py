@@ -27,7 +27,7 @@ class Row(object):
         self.obj: dbRow = row_obj
 
         self.origin: List[float] = self.obj.getOrigin()
-        self.x: float = self.origin[0] + 1380
+        self.x: float = self.origin[0]
         self.y: float = self.origin[1]
 
         self.xmin: float = self.obj.getBBox().xMin()
@@ -72,10 +72,10 @@ class Row(object):
         ignore_tap: bool = False,
         fixed: bool = False,
     ):
-        width = instance.getMaster().getWidth() if instance else 5060
+        width = instance.getMaster().getWidth() if instance else 6240
         name = instance.getMaster().getName() if instance else ""
-        if not ignore_tap:
-            self.tap(width)
+        #if not ignore_tap:
+        #    self.tap(width)
 
         for tap in self.taps:
             tx, ty = tap.getLocation()
@@ -85,7 +85,7 @@ class Row(object):
 
         if instance:
             instance.setOrient(self.orientation)
-            instance.setLocation(self.x if self.ordinal % 2 == 0 else (158240 + 2760 - (self.x + width)), self.y)
+            instance.setLocation(self.x, self.y)# if self.ordinal % 2 == 0 else (158240 + 2760 - (self.x + width)), self.y)
             instance.setPlacementStatus("PLACED" if not fixed else "LOCKED")
 
         if re.match(Row.tap_rx, name):
@@ -138,6 +138,7 @@ class Row(object):
         [V]   [K][F]
 
         """
+        return
 
         def pack(size, fill_sizes):
             fills = []

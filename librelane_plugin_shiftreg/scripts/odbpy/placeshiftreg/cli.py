@@ -98,7 +98,7 @@ class Placer:
         if tap_width is None:
             eprint("No tap cells found!")
             print(fill_cell_sizes)
-            exit(-1)
+        #    exit(-1)
 
         # Layout Setup
         self.block = self.db.getChip().getBlock()
@@ -122,7 +122,7 @@ class Placer:
             tap_width,
         )
 
-        self.hierarchy = data.Shiftreg(self.instances, sr_width, sr_depth)
+        self.hierarchy = data.Shiftreg(self.db, self.instances, sr_width, sr_depth)
 
         self.fill_cell_data = fill_cell_data
 

@@ -10,4 +10,5 @@ class ShiftregFlow(classic.Classic):
 
     Substitutions = {
         "-OpenROAD.TapEndcapInsertion": Shiftreg.PlaceShiftreg,
+        "+OpenROAD.DetailedPlacement": Shiftreg.PlaceShiftreg,
     }

@@ -24,6 +24,9 @@ def main(
     pdk = 'ihp-sg13g2'
     scl = 'sg13g2_stdcell'
     design = 'tt_um_snake_game'
+    # TODO: install pdk along with nix flake
+    pdk_root = f'ttsetup/pdk/ciel/{pdk}/versions/cb7daaa8901016cf7c5d272dfa322c41f024931f'
+    print(pdk_root)
 
     build_dir = os.path.join("runs", f"{pdk}-{scl}", design)
     mkdirp(build_dir)

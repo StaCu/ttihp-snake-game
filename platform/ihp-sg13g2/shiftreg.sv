@@ -21,6 +21,7 @@ generate
     for (i = 0; i < WIDTH; i = i + 1) begin
         wire sreg_w[DEPTH-1:0];
         wire sreg_q[DEPTH-1:0];
+        //wire high[DEPTH/2-1:0];
         //wire clk_leaf[DEPTH/25-1:0];
 
         assign sreg_w[0] = in[i];
@@ -36,6 +37,7 @@ generate
             if (j == 1) begin
                 sg13g2_dfrbpq_2 sreg_dff (
                     .CLK(clk),//_leaf[j/25]),
+                   // .RESET_B(high[j/2]),
                     .RESET_B(high),
                     .D(sreg_w[j]),
                     .Q(sreg_q[j])
@@ -43,6 +45,7 @@ generate
             end else begin
                 sg13g2_dfrbpq_1 sreg_dff (
                     .CLK(clk),//_leaf[j/25]),
+                    //.RESET_B(high[j/2]),
                     .RESET_B(high),
                     .D(sreg_w[j]),
                     .Q(sreg_q[j])
@@ -51,11 +54,31 @@ generate
         end
 
         for (j = 0; j < DEPTH-1; j = j + 1) begin
-            sg13g2_dlygate4sd3_1 sreg_dly (
+            //assign sreg_w[j+1] = sreg_q[j];
+            sg13g2_buf_1 sreg_dly(
                 .A(sreg_q[j]),
                 .X(sreg_w[j+1])
             );
+            //(* dont_touch = "true" *) sg13g2_dlygate4sd3_1 sreg_dly (
+            //    .A(sreg_q[j]),
+            //    .X(sreg_w[j+1])
+            //);
+           /* wire mid;
+            sg13g2_buf_1 sreg_dly(
+                .A(sreg_q[j]),
+                .X(mid)
+            );
+            sg13g2_buf_1 sreg_dly2(
+                .A(mid),
+                .X(sreg_w[j+1])
+            );*/
         end
+
+        /*for (j = 0; j < DEPTH / 2; j = j + 1) begin
+            sg13g2_tiehi sreg_high (
+                .L_HI(high[j])
+            );
+        end*/
 
         /*for (j = 0; j < DEPTH / 25; j = j + 1) begin
             sg13g2_buf_8 sreg_clkbuf (
