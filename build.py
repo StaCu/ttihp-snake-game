@@ -19,14 +19,11 @@ def main(
     pdk_root,
     **kwargs,
 ):
-    pdk = 'sky130A'
-    scl = 'sky130_fd_sc_hd'
     pdk = 'ihp-sg13g2'
     scl = 'sg13g2_stdcell'
     design = 'tt_um_snake_game'
     # TODO: install pdk along with nix flake
     pdk_root = f'ttsetup/pdk/ciel/{pdk}/versions/cb7daaa8901016cf7c5d272dfa322c41f024931f'
-    print(pdk_root)
 
     build_dir = os.path.join("runs", f"{pdk}-{scl}", design)
     mkdirp(build_dir)
@@ -34,51 +31,6 @@ def main(
     shutil.copytree('src/', build_dir, dirs_exist_ok=True)
     shutil.copytree(f'platform/{pdk}/', build_dir, dirs_exist_ok=True)
 
-    config = {
-        "PL_TARGET_DENSITY_PCT": 75,
-        "CLOCK_PERIOD": 20,
-        "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
-        "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
-        "RUN_LINTER": True,
-        "LINTER_INCLUDE_PDK_MODELS": True,
-        "CLOCK_PORT": "clk",
-        "RUN_KLAYOUT_XOR": False,
-        "RUN_KLAYOUT_DRC": False,
-        "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": False,
-        "TOP_MARGIN_MULT": 1,
-        "BOTTOM_MARGIN_MULT": 1,
-        "LEFT_MARGIN_MULT": 6,
-        "RIGHT_MARGIN_MULT": 6,
-        "FP_SIZING": "absolute",
-        "GRT_ALLOW_CONGESTION": True,
-        "FP_IO_HLENGTH": 2,
-        "FP_IO_VLENGTH": 2,
-        "FP_PDN_VPITCH": 38.87,
-        "RUN_CTS": True,
-        "FP_PDN_MULTILAYER": False,
-        "MAGIC_DEF_LABELS": False,
-        "MAGIC_WRITE_LEF_PINONLY": True,
-        "DESIGN_NAME": "tt_um_snake_game",
-        "VERILOG_FILES": [
-            "dir::tt_um_snake_game.sv",
-            "dir::common.sv",
-            "dir::tickgen.sv",
-            "dir::game.sv",
-            "dir::control.sv",
-            "dir::snake.sv",
-            "dir::shiftreg.sv",
-            "dir::apple.sv",
-            "dir::random.sv",
-            "dir::sound.sv",
-            "dir::vga.sv",
-            "dir::vga_sync.sv"
-        ],
-        "DIE_AREA": [0, 0, 161.00, 225.76],
-        "FP_DEF_TEMPLATE": "dir::tt_block_1x2_pg.def",
-        "VDD_PIN": "VPWR",
-        "GND_PIN": "VGND",
-        "RT_MAX_LAYER": "met4"
-    }
     config = {
         "PL_TARGET_DENSITY_PCT": 75,
         "CLOCK_PERIOD": 20,
@@ -127,7 +79,6 @@ def main(
     config['PDK'] = pdk
 
     TargetFlow = Flow.factory.get('ShiftregFlow')
-    #TargetFlow = Flow.factory.get('Classic')
     flow = TargetFlow(
         config,
         design_dir=os.path.abspath(build_dir),

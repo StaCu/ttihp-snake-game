@@ -46,6 +46,7 @@ generate
         end
 
         for (j = 0; j < DEPTH-1; j = j + 1) begin
+            // we actually want sg13g2_dlygate4sd3_1, but OpenRoad keeps replacing it, so we change it afterwards in the flow
             sg13g2_buf_1 sreg_dly(
                 .A(sreg_q[j]),
                 .X(sreg_w[j+1])
@@ -62,13 +63,6 @@ generate
                 .X(high[j])
             );
         end
-
-        /*for (j = 0; j < DEPTH / 25; j = j + 1) begin
-            sg13g2_buf_8 sreg_clkbuf (
-                .A(clk),
-                .X(clk_leaf[j])
-            );
-        end*/
     end
 endgenerate
 

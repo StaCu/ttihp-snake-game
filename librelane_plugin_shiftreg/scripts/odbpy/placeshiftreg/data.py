@@ -18,12 +18,12 @@ Instance.__repr__ = dbInst__repr__
 class Shiftreg(object):
     def __init__(self, db, instances: List[Instance], width: int, depth: int):
         self.db = db
-        self.clkbuf = None
-
         self.clk_ratio = 8
         self.tiehi_ratio = 4
         self.width = width
         self.depth = depth
+
+        # find the different cells belonging to the shiftreg
         self.bits = [[None] * depth for _ in range(width)]
         regex = re.compile(r'.*genblk1\\\[(\d+)\\\].genblk1\\\[(\d+)\\\].genblk1.sreg_dff')
         for instance in instances:
@@ -66,71 +66,45 @@ class Shiftreg(object):
             if 'sreg_fill_to_be_removed' in instance.getName():
                 self.fills.append(instance)
 
-        self.mode = 'remove_fills' if self.fills else 'place'
-
-        #self.clkbufs = [[None] * (depth // self.clk_ratio) for _ in range(width)]
-        #regex = re.compile(r'.*genblk1\\\[(\d+)\\\].genblk3\\\[(\d+)\\\].sreg_clkbuf')
-        #for instance in instances:
-        #    m = regex.match(instance.getName())
-        #    if m:
-        #        w = int(m.group(1))
-        #        d = int(m.group(2))
-        #        self.clkbufs[w][d] = instance
-
-        # tapcells
-        self.taps = []
-        for instance in instances:
-            if instance.getMaster().getName() == 'sky130_fd_sc_hd__tapvpwrvgnd_1':
-                self.taps.append(instance)
+        self.mode = 'repair' if self.fills else 'place'
 
     def place(self, rows: List[Row], start_row: int = 0):
-        if self.mode == 'remove_fills':
-            self.replace_fills()
+        if self.mode == 'repair':
+            self.repair()
             return 0
 
-        print('start')
+        # get blueprint for the filler cell we need to instantiate
         lib = self.db.getLibs()[0]
         chip = self.db.getChip()
         block = chip.getBlock()
-        dff_master = self.bits[0][0].getMaster()
-        dly_master = lib.findMaster('sg13g2_dlygate4sd3_1')
         dly_master = lib.findMaster('sg13g2_fill_1')
 
         min_width = 480
-        hi_width  = self.tiehi[0][0].getMaster().getWidth() # 
+        hi_width  = self.tiehi[0][0].getMaster().getWidth()
         ff_width  = self.bits[0][0].getMaster().getWidth() # 7360
-        dly_width = 4320 #self.dly[0][0].getMaster().getWidth() # 3680
-        clkbuf_width = 6240 #self.clkbufs[0][0].getMaster().getWidth() # 6240
+        dly_width = 4320
+        clkbuf_width = 6240
         r = start_row
-        for row in rows:
-            row.add_tap_cells(self.taps)
-
         row_max = 202080 - 2880 * 2
 
         for w in range(self.width):
             clock_buffer = 0
-            clk_buf_idx = 0
-            tie_high_idx = 0
+            tie_high = 0
             for d in range(self.depth):
                 # place tiehi
-                tie_high_idx += 1
-                if tie_high_idx == self.tiehi_ratio:
-                    tie_high_idx = 0
-                if tie_high_idx == self.tiehi_ratio//2:
+                tie_high += 1
+                if tie_high == self.tiehi_ratio:
+                    tie_high = 0
+                if tie_high == self.tiehi_ratio//2:
                     d2 = d // self.tiehi_ratio
                     if self.tiehi[w][d2]:
+                        # tiehi
                         hi_width  = self.tiehi[w][d2].getMaster().getWidth()
-                        #if r > 0 and rows[r-1].width + hi_width * 2 < row_max:
-                        #    rows[r-1].place(self.tiehi[w][d], fixed=True)
                         if rows[r].width + hi_width >= row_max:
                             r += 1
-                            rows[r].place(self.tiehi[w][d2], fixed=True)
-                        else:
-                            rows[r].place(self.tiehi[w][d2], fixed=True)
-
+                        rows[r].place(self.tiehi[w][d2], fixed=True)
+                        # buf
                         hi_width_buf  = self.tiehibuf[w][d2].getMaster().getWidth()
-                        #if r > 0 and rows[r-1].width + hi_width * 2 < row_max:
-                        #    rows[r-1].place(self.tiehi[w][d], fixed=True)
                         if rows[r].width + hi_width_buf >= row_max:
                             r += 1
                         rows[r].place(self.tiehibuf[w][d2], fixed=True)
@@ -141,72 +115,59 @@ class Shiftreg(object):
                     r += 1
                 rows[r].place(self.bits[w][d], fixed=True)
 
-                # place delay placeholders
-                #if d != self.depth-1:
-                #    if rows[r].width + dly_width + tap_width >= row_max: 
-                #        r += 1
-                #    for i in range(9):
-                #        inst = odb.dbInst.create(block, dly_master, f'sreg_fill_to_be_removed_{w}_{d}_{i}')
-                #        rows[r].place(inst, fixed=True)
-
-
                 # place delay
                 if d != self.depth-1:
                     dly_width2  = self.dly[w][d].getMaster().getWidth()
-#
-#                    old_r = r
-#                    if r > 0 and rows[r-1].width + dly_width < row_max:
-#                        r -= 1
 
                     if rows[r].width + dly_width >= row_max:
                         r += 1
 
+                    # depending of the zig-zag direction, we must place the buffer before or after the fillers
+                    # to ensure it is always on their left side.
                     if r % 2 == 0:
                         rows[r].place(self.dly[w][d], fixed=True)
                     # placeholders
                     for i in range((dly_width - dly_width2) // min_width):
                         inst = odb.dbInst.create(block, dly_master, f'sreg_fill_to_be_removed_{w}_{d}_{i}')
                         rows[r].place(inst, fixed=True)
-
                     if r % 2 == 1:
                         rows[r].place(self.dly[w][d], fixed=True)
 
-                  #  r = old_r
-
                 # place clock buffer
                 clock_buffer += 1
-                if clock_buffer == self.clk_ratio:# and clk_buf_idx < len(self.clkbufs[w]):
+                if clock_buffer == self.clk_ratio:
                     clock_buffer = 0
-                if clock_buffer == self.clk_ratio//2:# and clk_buf_idx < len(self.clkbufs[w]):
+                if clock_buffer == self.clk_ratio//2:
                     if rows[r].width + clkbuf_width >= row_max: 
                         r += 1
                     # placeholders
                     for i in range(clkbuf_width // min_width):
                         inst = odb.dbInst.create(block, dly_master, f'sreg_fill_to_be_removed_clk_{w}_{d}_{i}')
                         rows[r].place(inst, fixed=True)
-                   # rows[r].place(None, fixed=True)
-                #    rows[r].place(self.clkbufs[w][clk_buf_idx], fixed=True)
-                    #rows[r].x += clkbuf_width
-                    #rows[r].since_last_tap += clkbuf_width
-                    clk_buf_idx += 1
 
         return r + 1
     
-    def replace_fills(self):
+    def repair(self):
+        # get blueprint for the delay gate we need to instantiate
         lib = self.db.getLibs()[0]
         chip = self.db.getChip()
         block = chip.getBlock()
         dly_master = lib.findMaster('sg13g2_dlygate4sd3_1')
 
+        # remove fillers
         for fill in self.fills:
             odb.dbInst.destroy(fill)
 
+        # replace sg13g2_buf_1 with sg13g2_dlygate4sd3_1
         for w in range(self.width):
             for d in range(self.depth-1):
                 dly = self.dly[w][d]
                 prev = self.bits[w][d]
                 next = self.bits[w][d+1]
+                # create delay gate
                 inst = odb.dbInst.create(block, dly_master, f'dly2_{w}_{d}')
+
+                # connect it to the flipflop before and after
                 q = prev.findITerm('Q')
                 d = next.findITerm('D')
                 a = inst.findITerm('A')
@@ -215,7 +176,11 @@ class Shiftreg(object):
                 net1 = d.getNet()
                 a.connect(net0)
                 x.connect(net1)
+
+                # place it in right spot
                 inst.setOrient(dly.getOrient())
                 inst.setLocation(*dly.getLocation())
                 inst.setPlacementStatus(dly.getPlacementStatus())
+
+                # delete old buffer
                 odb.dbInst.destroy(dly)
