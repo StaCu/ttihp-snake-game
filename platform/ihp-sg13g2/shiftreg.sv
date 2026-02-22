@@ -25,10 +25,10 @@ generate
 
         assign sreg_w[0] = in[i];
         assign out[i] = sreg_q[DEPTH-1];
-        assign first[i] = sreg_q[1];
+        assign first[i] = sreg_q[0];
 
         for (j = 0; j < DEPTH; j = j + 1) begin
-            if (j == 1) begin
+            if (j == 0) begin
                 sg13g2_dfrbpq_2 sreg_dff (
                     .CLK(clk),
                     .RESET_B(high[j/4]),

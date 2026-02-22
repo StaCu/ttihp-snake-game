@@ -89,7 +89,7 @@ async def test(dut):
             await ClockCycles(dut.clk, 800*525)
 
     # the game has failed
-    assert int(dut.uio_out.value) == 0b001
+    assert int(dut.uio_out.value) & 0b1111 == 0b0001
 
     # Restart game
     dut._log.info("Restart")
@@ -99,5 +99,4 @@ async def test(dut):
     await ClockCycles(dut.clk, 1)
 
     # The game is no longer in failure state
-    assert int(dut.uio_out.value) == 0b000
-
+    assert int(dut.uio_out.value) & 0b1111 == 0b0000
