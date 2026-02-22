@@ -15,6 +15,7 @@ Eating food increases the length of the snake, increasing the difficulty.
 The design doesn't fit on two ihp tiles when using the Tiny Tapeout build flow.
 That is why a custom librelane flow is used to place the large shift register more efficiently.
 It is documented (including build instructions) in [here](docs/custom_flow.md).
+See releases for pre-built GDS.
 
 ## FPGA Version
 

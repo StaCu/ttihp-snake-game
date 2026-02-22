@@ -18,10 +18,23 @@ module shiftreg # (
 generate
     genvar i;
     genvar j;
+
+    wire high[DEPTH/2-1:0];
+
+    for (j = 0; j < DEPTH / 2; j = j + 1) begin
+        wire tmp_high;
+        sg13g2_tiehi sreg_high (
+            .L_HI(tmp_high)
+        );
+        sg13g2_buf_1 sreg_bufhigh(
+            .A(tmp_high),
+            .X(high[j])
+        );
+    end
+
     for (i = 0; i < WIDTH; i = i + 1) begin
         wire sreg_w[DEPTH-1:0];
         wire sreg_q[DEPTH-1:0];
-        wire high[DEPTH/4:0];
 
         assign sreg_w[0] = in[i];
         assign out[i] = sreg_q[DEPTH-1];
@@ -31,14 +44,14 @@ generate
             if (j == 0) begin
                 sg13g2_dfrbpq_2 sreg_dff (
                     .CLK(clk),
-                    .RESET_B(high[j/4]),
+                    .RESET_B(high[j/2]),
                     .D(sreg_w[j]),
                     .Q(sreg_q[j])
                 );
             end else begin
                 sg13g2_dfrbpq_1 sreg_dff (
                     .CLK(clk),
-                    .RESET_B(high[j/4]),
+                    .RESET_B(high[j/2]),
                     .D(sreg_w[j]),
                     .Q(sreg_q[j])
                 );
@@ -50,17 +63,6 @@ generate
             sg13g2_buf_1 sreg_dly(
                 .A(sreg_q[j]),
                 .X(sreg_w[j+1])
-            );
-        end
-
-        for (j = 0; j < DEPTH / 4 + 1; j = j + 1) begin
-            wire tmp_high;
-            sg13g2_tiehi sreg_high (
-                .L_HI(tmp_high)
-            );
-            sg13g2_buf_1 sreg_bufhigh(
-                .A(tmp_high),
-                .X(high[j])
             );
         end
     end

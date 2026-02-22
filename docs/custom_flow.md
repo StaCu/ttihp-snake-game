@@ -43,7 +43,7 @@ Notably, it also reuses a single tiehi cell (source for a logic 1) to power 4 re
 ### Placing
 
 The step to place the shiftregister is called before any other stdcell has been placed.
-We start in the bottom left corner and fill row-by-row in a zig-zag pattern:
+We start roughly in the middle row and fill row-by-row in a zig-zag pattern, first down then back up again:
 Flipflop, delay buffer, and occasionally tiehi and clock buffer.
 
 This would be fine if not for two **minor** inconveniences:
@@ -56,10 +56,6 @@ After detailed placement finished, the repair step then removes the filler and r
 
 The solution to 2. is to fill a block the size of a `sg13g2_buf_8` clock buffer with filler cells and remove them right before CTS.
 TritonCTS actually manages to find and fill the holes (mostly and good enough).
-
-**Note:**
-The current placement is sub-optimal: the first register is palced in the bottom left corner of the chip, causing a very long wire to connect to it.
-Sometimes this leads to antenna violations, but I got RNG-lucky here - maybe I'll write a better placement algorithm later.
 
 ### Result
 
