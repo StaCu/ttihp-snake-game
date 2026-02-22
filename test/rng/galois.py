@@ -36,7 +36,6 @@ for i in range(32):
     feedback = ((lfsr >> 2) ^ (lfsr >> 4)) & 0b1
     lfsr = (lfsr << 1 | feedback) & 0x1f
     hit[lfsr] = 1
-    print(lfsr)
 
 print("galois5: ", sum(hit))
 

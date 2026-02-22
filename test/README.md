@@ -1,30 +1,25 @@
-# Testbench for Tiny Tapeout Snake Game
+# Tests for Tiny Tapeout Snake Game
 
-Testbench for this Tiny Tapeout project.
-It uses [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
+These tests use [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
 
-## How to run
-
-To run the RTL simulation:
+## Setup
 
 ```sh
-make -B
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-To run gatelevel simulation, first harden your project and copy `../runs/wokwi/results/final/verilog/gl/{your_module_name}.v` to `gate_level_netlist.v`.
-Then run:
+## Run
+
+To run the simulations, source the cocotb `venv`, go into the test sub-directory and run the command specified in its `ReadMe.md`.
 
 ```sh
-make -B GATES=yes
+# run this before running any of the tests
+source venv/bin/activate
+
+# the `full` simulation can also be called from this directory
+make
+# or gate level simulation
+make GATES=yes
 ```
-
-There are two additional tests in `test_fast.py` that use a slightly altered version of the RTL.
-Here, the games tickrate is no longer coupled to the VGA display refresh rate and instead uses a timer with a much shorter interval.
-This then allows for much longer tests including a full run of an entire successful game that ends with the snake filling the entire area.
-To run, use:
-
-```sh
-make -B FAST=yes
-```
-
-You may need to delete the `sim_build` folder before/after running fast simulation.

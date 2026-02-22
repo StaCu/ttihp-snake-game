@@ -1,53 +1,13 @@
-# Makefile
-# See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
-# defaults
-SIM ?= icarus
-FST ?= -fst # Use more efficient FST format
-TOPLEVEL_LANG ?= verilog
-SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = tt_um_snake_game.sv common.sv game.sv tickgen.sv apple.sv random.sv control.sv snake.sv shiftreg.sv vga.sv vga_sync.sv sound.sv
+all:
+	$(MAKE) -C full $(MAKECMDGOALS)
+	cp full/tb.fst tb.fst
+	cp full/results.xml results.xml
 
-ifneq ($(GATES),yes)
+clean:
+	rm -rf fast/__pycache__ fast/sim_build fast/results.xml fast/tb.fst fast/tb.fst.hier
+	rm -rf full/__pycache__ full/sim_build full/results.xml full/tb.fst full/tb.fst.hier
+	rm -rf shiftreg/__pycache__ shiftreg/sim_build shiftreg/results.xml
+	rm -f tb.fst results.xml
 
-# RTL simulation:
-SIM_BUILD		 = sim_build/rtl
-VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
-
-else
-
-# Gate level simulation:
-SIM_BUILD		 = sim_build/gl
-COMPILE_ARGS    += -DGL_TEST
-COMPILE_ARGS    += -DFUNCTIONAL
-COMPILE_ARGS    += -DSIM
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
-
-# this gets copied in by the GDS action workflow
-VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
-
-endif
-
-# Allow sharing configuration between design and testbench via `include`:
-COMPILE_ARGS 		+= -I$(SRC_DIR)
-
-# Include the testbench sources:
-VERILOG_SOURCES += $(PWD)/tb.v
-TOPLEVEL = tb
-
-ifeq ($(FAST),yes)
-
-COMPILE_ARGS    += -DRTL_SIMULATION
-# List test modules to run, separated by commas and without the .py suffix:
-COCOTB_TEST_MODULES = test_fast
-
-else
-
-# List test modules to run, separated by commas and without the .py suffix:
-COCOTB_TEST_MODULES = test
-
-endif
-
-# include cocotb's make rules to take care of the simulator setup
-include $(shell cocotb-config --makefiles)/Makefile.sim
+.PHONY: all clean
