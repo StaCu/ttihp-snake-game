@@ -22,9 +22,9 @@ jobs:
         uses: TinyTapeout/tt-gds-action/custom_gds@ttihp26a
         with:
           top_module: ${{ steps.top_module.outputs.TOP_MODULE }}
-          gds_path: gds/${{ steps.top_module.outputs.TOP_MODULE }}.gds
-          lef_path: lef/${{ steps.top_module.outputs.TOP_MODULE }}.lef
-          verilog_path: src/tt_um_snake_game.sv
+          gds_path: result/gds/${{ steps.top_module.outputs.TOP_MODULE }}.gds
+          lef_path: result/lef/${{ steps.top_module.outputs.TOP_MODULE }}.lef
+          verilog_path: result/nl/tt_um_snake_game.nl.v
           pdk: ihp-sg13g2
 
   precheck:
