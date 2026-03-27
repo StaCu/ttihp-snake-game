@@ -154,17 +154,18 @@ module game (
 		.eat(snake_eat_apple)
 	);
 
-	sound sound_inst (
-		.clk(clk),
-		.rst_n(!restart),
-		.vsync_pulse(tick_vsync_pulse),
-		.pwm_base(pwm_base),
-		.failure(snake_failure && o_tick),
-		.success(success && o_tick),
-		.eat(snake_eat_apple),
-		.tick(tick_done),
-		.audio(o_audio)
-	);
+//	sound sound_inst (
+//		.clk(clk),
+//		.rst_n(!restart),
+//		.vsync_pulse(tick_vsync_pulse),
+//		.pwm_base(pwm_base),
+//		.failure(snake_failure && o_tick),
+//		.success(success && o_tick),
+//		.eat(snake_eat_apple),
+//		.tick(tick_done),
+//		.audio(o_audio)
+//	);
+	assign o_audio = 0;
 
 	always @(posedge clk) begin
 		if (restart) begin
