@@ -21,19 +21,20 @@ module tickgen (
 
     logic [3:0] counter_max;
     logic [3:0] counter;
+    assign counter_max = { DEFAULT_TICK_COUNTER_MAX, 1'b0 };
 
     always @(posedge clk) begin
-        if (!rst_n) begin
-            counter_max <= { DEFAULT_TICK_COUNTER_MAX, 1'b0 };
-        end else begin
-            if (i_restart && !prev_user_input) begin
-                if (i_up) begin
-                    counter_max <= counter_max + 2;
-                end else if (i_down) begin
-                    counter_max <= counter_max - 2;
-                end
-            end
-        end
+        //if (!rst_n) begin
+        //    counter_max <= { DEFAULT_TICK_COUNTER_MAX, 1'b0 };
+        //end else begin
+        //    if (i_restart && !prev_user_input) begin
+        //        if (i_up) begin
+        //            counter_max <= counter_max + 2;
+        //        end else if (i_down) begin
+        //            counter_max <= counter_max - 2;
+        //        end
+        //    end
+        //end
 
         if (i_restart) begin
             counter <= 0;
