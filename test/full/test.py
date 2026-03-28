@@ -84,12 +84,12 @@ async def test(dut):
                 await ClockCycles(dut.clk, 1)
                 if int(dut.uio_out.value) & 0b100 != 0:
                     apple_eaten = True
-            #assert apple_eaten
+            assert apple_eaten
         else:
             await ClockCycles(dut.clk, 800*525)
 
     # the game has failed
-    #assert int(dut.uio_out.value) & 0b1111 == 0b0001
+    assert int(dut.uio_out.value) & 0b1111 == 0b0001
 
     # Restart game
     dut._log.info("Restart")
